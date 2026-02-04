@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import './admin.css';
+import '../styles/admin.css';
 
 const LoginPage = () => {
   const [password, setPassword] = useState('');
@@ -54,7 +54,6 @@ const LoginPage = () => {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter Password"
               required
-              // Styles handled by admin.css (.admin-form input)
             />
           </div>
           {error && <p style={{ color: 'red', marginBottom: '1rem', textAlign: 'center' }}>{error}</p>}

@@ -80,11 +80,9 @@ export const contentUpdateValidation = [
   body('section')
     .notEmpty()
     .withMessage('Section is required')
-    .isIn(['hero', 'about', 'experience', 'projects', 'contact'])
+    .isIn(['bio', 'skills', 'portfolio', 'services', 'experience', 'education', 'testimonials', 'contactInfo'])
     .withMessage('Invalid section'),
   body('data')
     .notEmpty()
     .withMessage('Data is required')
-    .isObject()
-    .withMessage('Data must be an object')
 ];

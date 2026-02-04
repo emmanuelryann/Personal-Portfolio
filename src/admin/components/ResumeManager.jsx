@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { API_ENDPOINTS, authenticatedFetch, getAuthHeaders } from '../../config/api';
+import '../styles/ResumeManager.css';
 
 const ResumeManager = () => {
   const [experience, setExperience] = useState([]);
@@ -8,15 +10,23 @@ const ResumeManager = () => {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    fetch('http://localhost:5001/api/content')
-      .then(res => res.json())
-      .then(res => {
+    const fetchResumeData = async () => {
+      try {
+        const response = await fetch(API_ENDPOINTS.content);
+        const res = await response.json();
+        
         if (res.success) {
           setExperience(res.content.experience || []);
           setEducation(res.content.education || []);
         }
         setLoading(false);
-      });
+      } catch (err) {
+        console.error('Failed to load resume data:', err);
+        setLoading(false);
+      }
+    };
+
+    fetchResumeData();
   }, []);
 
   // Generic handler for both lists
@@ -26,8 +36,21 @@ const ResumeManager = () => {
     setList(newList);
   };
 
-  const addItem = (list, setList) => {
-    setList([...list, { date: '2023 - Present', title: 'Title', company: 'Organization', location: 'Location', type: 'FULLTIME', description: 'Description...' }]);
+  const addItem = (list, setList, isEducation = false) => {
+    const newItem = { 
+      date: '2023 - Present', 
+      title: isEducation ? 'Degree Title' : 'Job Title', 
+      location: 'Location', 
+    };
+    
+    if (isEducation) {
+      newItem.institution = 'Organization';
+    } else {
+      newItem.company = 'Organization';
+      newItem.type = 'FULLTIME';
+    }
+    
+    setList([...list, newItem]);
   };
 
   const removeItem = (list, setList, index) => {
@@ -36,22 +59,26 @@ const ResumeManager = () => {
 
   const handleSave = async () => {
     setSaving(true);
+    
     try {
       // Save Experience
-      await fetch('http://localhost:5001/api/content', {
+      await authenticatedFetch(API_ENDPOINTS.content, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify({ section: 'experience', data: experience })
       });
+      
       // Save Education
-      await fetch('http://localhost:5001/api/content', {
+      await authenticatedFetch(API_ENDPOINTS.content, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify({ section: 'education', data: education })
       });
+      
       setMessage('Resume updated!');
       setTimeout(() => setMessage(''), 5000);
-    } catch {
+    } catch (error) {
+      console.error('Save failed:', error);
       setMessage('Failed to save.');
       setTimeout(() => setMessage(''), 5000);
     } finally {
@@ -59,23 +86,23 @@ const ResumeManager = () => {
     }
   };
 
-  const renderList = (title, list, setList, companyLabel) => (
-    <div style={{ marginBottom: '2rem' }}>
-      <h3 style={{ marginBottom: '1rem', borderBottom: '1px solid #eee', paddingBottom: '0.5rem' }}>{title}</h3>
+  const renderList = (title, list, setList, companyLabel, isEducation = false) => (
+    <div className="resume-manager__section">
+      <h3 className="resume-manager__section-title">{title}</h3>
       {list.map((item, index) => (
-        <div key={index} style={{ padding: '1rem', border: '1px solid #ddd', marginBottom: '1rem', borderRadius: '4px', backgroundColor: 'white' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+        <div key={index} className="resume-manager__item-card">
+          <div className="resume-manager__grid-row">
             <input 
               placeholder="Date Range"
               value={item.date} 
               onChange={(e) => handleChange(list, setList, index, 'date', e.target.value)} 
-              style={{ padding: '0.5rem' }} 
+              className="resume-manager__input"
             />
             <input 
-              placeholder="Job/Degree Title"
+              placeholder={isEducation ? "Degree Title" : "Job Title"}
               value={item.title} 
               onChange={(e) => handleChange(list, setList, index, 'title', e.target.value)} 
-              style={{ padding: '0.5rem' }} 
+              className="resume-manager__input"
             />
           </div>
           <div style={{ marginBottom: '1rem' }}>
@@ -83,47 +110,58 @@ const ResumeManager = () => {
               placeholder={companyLabel}
               value={item.company || item.institution}
               onChange={(e) => handleChange(list, setList, index, item.company ? 'company' : 'institution', e.target.value)}
-              style={{ width: '100%', marginBottom: '0.5rem', padding: '0.5rem' }}
+              className="resume-manager__full-width"
             />
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-              <input
-                placeholder="Type (e.g. FULLTIME)"
-                value={item.type || ''}
-                onChange={(e) => handleChange(list, setList, index, 'type', e.target.value)}
-                style={{ padding: '0.5rem' }}
-              />
+            <div className="resume-manager__grid-row">
+              {!isEducation && (
+                <input
+                  placeholder="Type (e.g. FULLTIME)"
+                  value={item.type || ''}
+                  onChange={(e) => handleChange(list, setList, index, 'type', e.target.value)}
+                  className="resume-manager__input"
+                />
+              )}
               <input
                 placeholder="Location"
                 value={item.location || ''}
                 onChange={(e) => handleChange(list, setList, index, 'location', e.target.value)}
-                style={{ padding: '0.5rem' }}
+                className={isEducation ? "resume-manager__full-width" : "resume-manager__input"}
               />
             </div>
           </div>
-          <textarea
-            placeholder="Description"
-            value={item.description}
-            onChange={(e) => handleChange(list, setList, index, 'description', e.target.value)}
-            rows="2"
-          />
-          <button onClick={() => removeItem(list, setList, index)} style={{ color: 'red', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}>Remove Item</button>
+          <button 
+            onClick={() => removeItem(list, setList, index)} 
+            className="resume-manager__remove-btn"
+          >
+            Remove Item
+          </button>
         </div>
       ))}
-      <button onClick={() => addItem(list, setList)} style={{ padding: '0.5rem', background: '#eee', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>+ Add {title}</button>
+      <button 
+        onClick={() => addItem(list, setList, isEducation)} 
+        className="resume-manager__add-btn"
+      >
+        + Add {title}
+      </button>
     </div>
   );
 
   if (loading) return <p>Loading...</p>;
 
   return (
-    <div className="admin-form">
+    <div className="admin-form resume-manager">
       {renderList('Work Experience', experience, setExperience, 'Company')}
-      {renderList('Education', education, setEducation, 'Institution')}
+      {renderList('Education', education, setEducation, 'Institution', true)}
       
-      <button onClick={handleSave} disabled={saving} style={{ padding: '0.75rem 1.5rem', background: '#96bb7c', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', marginTop: '1rem' }}>
+      <button 
+        onClick={handleSave} 
+        disabled={saving} 
+        className="resume-manager__save-btn"
+      >
         {saving ? 'Saving...' : 'Save Resume'}
       </button>
-      {message && <p style={{ marginTop: '1rem', color: 'green' }}>{message}</p>}
+      
+      {message && <p className="resume-manager__message">{message}</p>}
     </div>
   );
 };

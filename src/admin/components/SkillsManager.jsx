@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { API_ENDPOINTS, authenticatedFetch, getAuthHeaders } from '../../config/api';
+import '../styles/SkillsManager.css';
 
 const SkillsManager = () => {
   const [skills, setSkills] = useState([]);
@@ -7,14 +9,22 @@ const SkillsManager = () => {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    fetch('http://localhost:5001/api/content')
-      .then(res => res.json())
-      .then(res => {
+    const fetchSkills = async () => {
+      try {
+        const response = await fetch(API_ENDPOINTS.content);
+        const res = await response.json();
+        
         if (res.success && res.content.skills) {
           setSkills(res.content.skills);
         }
         setLoading(false);
-      });
+      } catch (err) {
+        console.error('Failed to load skills:', err);
+        setLoading(false);
+      }
+    };
+
+    fetchSkills();
   }, []);
 
   const handleChange = (index, field, value) => {
@@ -31,12 +41,20 @@ const SkillsManager = () => {
     formData.append('image', file);
 
     try {
-      const res = await fetch('http://localhost:5001/api/upload', { method: 'POST', body: formData });
-      const result = await res.json();
+      const response = await authenticatedFetch(API_ENDPOINTS.uploadImage, {
+        method: 'POST',
+        body: formData
+      });
+      
+      const result = await response.json();
+      
       if (result.success) {
         handleChange(index, 'image', result.url);
+      } else {
+        alert(result.message || 'Upload failed');
       }
-    } catch {
+    } catch (error) {
+      console.error('Upload failed:', error);
       alert('Upload failed');
     }
   };
@@ -53,18 +71,25 @@ const SkillsManager = () => {
   const handleSave = async (e) => {
     e.preventDefault();
     setSaving(true);
+    
     try {
-      const res = await fetch('http://localhost:5001/api/content', {
+      const response = await authenticatedFetch(API_ENDPOINTS.content, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify({ section: 'skills', data: skills })
       });
-      const result = await res.json();
+      
+      const result = await response.json();
+      
       if (result.success) {
         setMessage('Skills updated successfully!');
         setTimeout(() => setMessage(''), 5000);
+      } else {
+        setMessage(result.message || 'Failed to update skills.');
+        setTimeout(() => setMessage(''), 5000);
       }
     } catch (error) {
+      console.error('Save failed:', error);
       setMessage('Failed to update skills.');
       setTimeout(() => setMessage(''), 5000);
     } finally {
@@ -75,33 +100,36 @@ const SkillsManager = () => {
   if (loading) return <p>Loading...</p>;
 
   return (
-    <div className="admin-form">
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+    <div className="admin-form skills-manager">
+      <div className="skills-manager__grid">
         {skills.map((skill, index) => (
-          <div key={index} style={{ padding: '1rem', border: '1px solid #ddd', borderRadius: '4px', backgroundColor: 'white' }}>
-            <div style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-               {/* Icon Preview */}
-               <div style={{ width: '50px', height: '50px', border: '1px solid #eee', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f9f9f9', borderRadius: '4px' }}>
-                 {skill.image ? (
-                   <img src={skill.image} alt={skill.name} style={{ maxWidth: '80%', maxHeight: '80%' }} />
-                 ) : (
-                   <span style={{ fontSize: '0.8rem', color: '#ccc' }}>No Icon</span>
-                 )}
-               </div>
-               {/* Upload */}
-               <div style={{ flex: 1 }}>
-                 <input type="file" onChange={(e) => handleImageUpload(index, e)} style={{ fontSize: '0.8rem', width: '100%' }} />
-                 <input 
-                   type="text" 
-                   value={skill.image || ''} 
-                   placeholder="Or Image URL"
-                   onChange={(e) => handleChange(index, 'image', e.target.value)}
-                   style={{ fontSize: '0.7rem', marginTop: '0.25rem', padding: '0.25rem', width: '100%' }}
-                 />
-               </div>
+          <div key={index} className="skills-manager__item-card">
+            <div className="skills-manager__icon-section">
+              <div className="skills-manager__icon-preview">
+                {skill.image ? (
+                  <img src={skill.image} alt={skill.name} />
+                ) : (
+                  <span className="skills-manager__no-icon">No Icon</span>
+                )}
+              </div>
+              <div className="skills-manager__upload-wrapper">
+                <input 
+                  type="file" 
+                  onChange={(e) => handleImageUpload(index, e)} 
+                  className="skills-manager__file-input"
+                  accept="image/*"
+                />
+                <input 
+                  type="text" 
+                  value={skill.image || ''} 
+                  placeholder="Or Image URL"
+                  onChange={(e) => handleChange(index, 'image', e.target.value)}
+                  className="skills-manager__url-input"
+                />
+              </div>
             </div>
 
-            <div style={{ marginBottom: '0.5rem' }}>
+            <div className="skills-manager__name-section">
               <label>Skill Name</label>
               <input 
                 type="text" 
@@ -112,7 +140,7 @@ const SkillsManager = () => {
 
             <button 
               onClick={() => removeSkill(index)}
-              style={{ padding: '0.3rem 0.5rem', backgroundColor: '#ff6b6b', color: 'white', border: 'none', borderRadius: '4px', width: '100%', marginTop: '0.5rem', cursor: 'pointer' }}
+              className="skills-manager__remove-btn"
             >
               Remove
             </button>
@@ -120,7 +148,7 @@ const SkillsManager = () => {
         ))}
         <button 
           onClick={addSkill}
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', border: '2px dashed #ccc', borderRadius: '4px', background: 'none', cursor: 'pointer', minHeight: '150px' }}
+          className="skills-manager__add-btn"
         >
           + Add Skill
         </button>
@@ -129,11 +157,12 @@ const SkillsManager = () => {
       <button 
         onClick={handleSave}
         disabled={saving}
-        style={{ padding: '0.75rem 1.5rem', background: '#96bb7c', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+        className="skills-manager__save-btn"
       >
         {saving ? 'Saving...' : 'Save All Changes'}
       </button>
-      {message && <p style={{ marginTop: '1rem', color: 'green' }}>{message}</p>}
+      
+      {message && <p className="skills-manager__message">{message}</p>}
     </div>
   );
 };

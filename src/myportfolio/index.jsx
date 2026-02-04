@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import './index.css';
+import { API_ENDPOINTS } from '../config/api.js';
 
 // SVG Icons as components
 const Icons = {
@@ -156,7 +157,7 @@ function Portfolio() {
   const [submitStatus, setSubmitStatus] = useState({ type: '', message: '' });
 
   const [content, setContent] = useState({
-    bio: { image: '', heading: '', paragraphs: [] },
+    bio: { image: null, heading: '', paragraphs: [] },
     skills: [],
     portfolio: [],
     services: [],
@@ -197,15 +198,21 @@ function Portfolio() {
 
     window.addEventListener('scroll', handleScroll);
 
-    // Fetch Content
-    fetch('http://localhost:5001/api/content')
-      .then(res => res.json())
-      .then(data => {
+    // Fetch Content using async/await
+    const fetchContent = async () => {
+      try {
+        const response = await fetch(API_ENDPOINTS.content);
+        const data = await response.json();
+        
         if (data.success) {
           setContent(data.content);
         }
-      })
-      .catch(err => console.error('Failed to load content', err));
+      } catch (err) {
+        console.error('Failed to load content', err);
+      }
+    };
+
+    fetchContent();
 
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -225,7 +232,7 @@ function Portfolio() {
     setSubmitStatus({ type: '', message: '' });
 
     try {
-      const response = await fetch('http://localhost:5001/api/contact', {
+      const response = await fetch(API_ENDPOINTS.contact, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -265,8 +272,6 @@ function Portfolio() {
       setIsSubmitting(false);
     }
   };
-  
-  // Removed useEffect for session storage check as we no longer reload
 
   const scrollToSection = (e, href) => {
     e.preventDefault();
@@ -337,11 +342,13 @@ function Portfolio() {
       <section id="about" className="section">
         <div className="container">
           <div className="about-content">
-            <img 
-              src={content.bio.image} 
-              alt="Profile" 
-              className="about-image"
-            />
+            {content.bio.image && (
+              <img 
+                src={content.bio.image} 
+                alt="Profile" 
+                className="about-image"
+              />
+            )}
             <div className="about-right">
               <div className="about-text">
                 <h3>{content.bio.heading}</h3>
@@ -353,7 +360,7 @@ function Portfolio() {
               <a href="#contact">
                 <button className="btn-primary">Hire Me</button>
               </a>
-              <a href="http://localhost:5001/api/download-cv" target="_blank" rel="noopener noreferrer">
+              <a href={API_ENDPOINTS.downloadCV} target="_blank" rel="noopener noreferrer">
                 <button className="btn-primary" style={{ marginLeft: '1rem', backgroundColor: '#333' }}>Download CV</button>
               </a>
             </div>
@@ -368,7 +375,7 @@ function Portfolio() {
             {content.skills.map((skill, index) => (
               <div key={index} className="skill-card">
                 <div className="skill-icon">
-                  <img src={skill.image} alt={skill.name} />
+                  {skill.image && <img src={skill.image} alt={skill.name} />}
                 </div>
                 <span className="skill-name">{skill.name}</span>
               </div>
@@ -384,7 +391,7 @@ function Portfolio() {
           <div className="portfolio-grid">
             {content.portfolio.map(item => (
               <div key={item.id} className="portfolio-item">
-                <img src={item.image} alt={item.title} />
+                {item.image && <img src={item.image} alt={item.title} />}
                 <div className="portfolio-overlay">
                   <h4 className="portfolio-hover-title">{item.title}</h4>
                 </div>
@@ -471,30 +478,34 @@ function Portfolio() {
       </section>
 
       {/* Testimonials Section */}
-      <section id="testimonials" className="section section-alt">
-        <div className="container">
-          <h2 className="section-title">Happy Clients</h2>
-          <div className="testimonials-grid">
-            {content.testimonials.map((testimonial, index) => (
-              <div key={index} className="testimonial-card">
-                <div className="testimonial-avatar-wrapper">
-                  <img 
-                    src={testimonial.image} 
-                    alt={testimonial.name}
-                    className="testimonial-image"
-                  />
-                </div>
-                <div className="testimonial-bubble">
-                  <p className="testimonial-text">{testimonial.text}</p>
-                  <div className="testimonial-author">
-                    <span className="author-name">&mdash; {testimonial.name}</span>, <span className="author-title">{testimonial.title}</span>
+      {content.testimonials && content.testimonials.length > 0 && (
+        <section id="testimonials" className="section section-alt">
+          <div className="container">
+            <h2 className="section-title">Happy Clients</h2>
+            <div className="testimonials-grid">
+              {content.testimonials.map((testimonial, index) => (
+                <div key={index} className="testimonial-card">
+                  <div className="testimonial-avatar-wrapper">
+                    {testimonial.image && (
+                      <img 
+                        src={testimonial.image} 
+                        alt={testimonial.name}
+                        className="testimonial-image"
+                      />
+                    )}
+                  </div>
+                  <div className="testimonial-bubble">
+                    <p className="testimonial-text">{testimonial.text}</p>
+                    <div className="testimonial-author">
+                      <span className="author-name">&mdash; {testimonial.name}</span>, <span className="author-title">{testimonial.title}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Contact Section */}
       <section id="contact" className="section section-alt">
@@ -624,7 +635,6 @@ function Portfolio() {
                   <li><a href="#resume">Resume</a></li>
                 </ul>
               </div>
-              {/* Services Footer Column Removed */}
               <div className="footer-column">
                 <h4>Contact</h4>
                 <ul>

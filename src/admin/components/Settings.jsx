@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { API_ENDPOINTS, authenticatedFetch, getAuthHeaders } from '../../config/api';
+import '../styles/Settings.css';
 
 const Settings = () => {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -20,8 +22,8 @@ const Settings = () => {
       return;
     }
 
-    if (newPassword.length < 6) {
-      setMessage('Password must be at least 6 characters long');
+    if (newPassword.length < 8) {
+      setMessage('Password must be at least 8 characters long');
       setIsError(true);
       setTimeout(() => { setMessage(''); setIsError(false); }, 5000);
       return;
@@ -30,13 +32,13 @@ const Settings = () => {
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:5001/api/auth/change-password', {
+      const response = await authenticatedFetch(API_ENDPOINTS.changePassword, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify({ currentPassword, newPassword })
       });
       
-      const data = await res.json();
+      const data = await response.json();
 
       if (data.success) {
         setMessage('Password updated successfully');
@@ -54,6 +56,7 @@ const Settings = () => {
         setTimeout(() => { setMessage(''); setIsError(false); }, 5000);
       }
     } catch (error) {
+      console.error('Password change failed:', error);
       setMessage('Server error. Please try again.');
       setIsError(true);
       setTimeout(() => { setMessage(''); setIsError(false); }, 5000);
@@ -63,13 +66,13 @@ const Settings = () => {
   };
 
   return (
-    <div style={{ maxWidth: '500px' }} className="admin-form">
-      <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '8px', border: '1px solid #ddd' }}>
-        <h3 style={{ marginBottom: '1.5rem' }}>Change Admin Password</h3>
+    <div className="admin-form settings">
+      <div className="settings__card">
+        <h3 className="settings__title">Change Admin Password</h3>
         
         <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '1rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem' }}>Current Password</label>
+          <div className="settings__form-group">
+            <label className="settings__label">Current Password</label>
             <input 
               type="password" 
               value={currentPassword}
@@ -78,8 +81,8 @@ const Settings = () => {
             />
           </div>
 
-          <div style={{ marginBottom: '1rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem' }}>New Password</label>
+          <div className="settings__form-group">
+            <label className="settings__label">New Password</label>
             <input 
               type="password" 
               value={newPassword}
@@ -88,8 +91,8 @@ const Settings = () => {
             />
           </div>
 
-          <div style={{ marginBottom: '1.5rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem' }}>Confirm New Password</label>
+          <div className="settings__form-group">
+            <label className="settings__label">Confirm New Password</label>
             <input 
               type="password" 
               value={confirmPassword}
@@ -99,13 +102,7 @@ const Settings = () => {
           </div>
 
           {message && (
-            <p style={{ 
-              padding: '0.75rem', 
-              marginBottom: '1rem', 
-              borderRadius: '4px',
-              backgroundColor: isError ? '#ffebee' : '#e8f5e9',
-              color: isError ? '#c62828' : '#2e7d32'
-            }}>
+            <p className={`settings__message ${isError ? 'settings__message--error' : 'settings__message--success'}`}>
               {message}
             </p>
           )}
@@ -113,16 +110,7 @@ const Settings = () => {
           <button 
             type="submit" 
             disabled={loading}
-            style={{ 
-              width: '100%', 
-              padding: '0.75rem', 
-              backgroundColor: '#2c3e50', 
-              color: 'white', 
-              border: 'none', 
-              borderRadius: '4px', 
-              cursor: loading ? 'not-allowed' : 'pointer',
-              opacity: loading ? 0.7 : 1
-            }}
+            className="settings__submit-btn"
           >
             {loading ? 'Updating...' : 'Update Password'}
           </button>

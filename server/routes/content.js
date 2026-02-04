@@ -2,74 +2,158 @@ import { Router } from 'express';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { verifyToken } from '../middleware/auth.js';
+import { contentUpdateValidation, validate } from '../middleware/validation.js';
+import { apiLimiter } from '../middleware/rateLimiter.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dataPath = path.join(__dirname, '../data.json');
 
 const router = Router();
 
-// Helper to read data
 const readData = () => {
-  return JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-};
-
-// Helper to write data
-const writeData = (data) => {
-  fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));
-};
-
-// GET Submissions (Protected ideally, but public for this mvp structure for now)
-router.get('/submissions', (req, res) => {
   try {
-    const data = readData();
-    res.json({ success: true, submissions: data.submissions || [] });
+    return JSON.parse(fs.readFileSync(dataPath, 'utf8'));
   } catch (error) {
-    console.error('Error reading submissions:', error);
-    res.status(500).json({ success: false, message: 'Server error' });
+    console.error('Error reading data:', error);
+    throw new Error('Database read error');
   }
-});
+};
 
-// GET Public Content
-router.get('/', (req, res) => {
+const writeData = (data) => {
+  try {
+    fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));
+  } catch (error) {
+    console.error('Error writing data:', error);
+    throw new Error('Database write error');
+  }
+};
+
+router.get('/', apiLimiter, (req, res) => {
   try {
     const data = readData();
-    res.json({ success: true, content: data.content });
+    
+    const publicContent = {
+      bio: data.content?.bio || {},
+      skills: data.content?.skills || [],
+      portfolio: data.content?.portfolio || [],
+      services: data.content?.services || [],
+      experience: data.content?.experience || [],
+      education: data.content?.education || [],
+      testimonials: data.content?.testimonials || [],
+      contactInfo: data.content?.contactInfo || {}
+    };
+    
+    res.json({ 
+      success: true, 
+      content: publicContent 
+    });
   } catch (error) {
     console.error('Error reading content:', error);
-    res.status(500).json({ success: false, message: 'Server error' });
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to load content' 
+    });
   }
 });
 
-// Middleware for auth check (can be expanded)
-// Ideally, import verifyToken from middleware here if using JWT
-// For this simple implementation, we assume the frontend sends a secret or we rely on session/cookie later.
-// But as per plan, we'll implement a simple verifyPassword middleware or similar in a refined auth flow.
-// For now, let's keep public GET and protected PUT.
-
-// PUT content (Protected) - Protected by generic auth check we will add to index.js or specific route
-router.put('/', (req, res) => {
+router.get('/submissions', verifyToken, apiLimiter, (req, res) => {
   try {
-    const { section, data } = req.body;
+    const data = readData();
     
-    if (!section || !data) {
-      return res.status(400).json({ success: false, message: 'Missing section or data' });
-    }
-
-    const currentDb = readData();
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
     
-    // Update specific section
-    if (currentDb.content[section]) {
-      currentDb.content[section] = data;
-      writeData(currentDb);
-      res.json({ success: true, message: `${section} updated successfully`, content: currentDb.content });
-    } else {
-      res.status(404).json({ success: false, message: 'Section not found' });
-    }
-
+    const submissions = data.submissions || [];
+    const paginatedSubmissions = submissions.slice(startIndex, endIndex);
+    
+    res.json({ 
+      success: true, 
+      submissions: paginatedSubmissions,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(submissions.length / limit),
+        totalSubmissions: submissions.length,
+        hasMore: endIndex < submissions.length
+      }
+    });
   } catch (error) {
-    console.error('Error updating content:', error);
-    res.status(500).json({ success: false, message: 'Server error' });
+    console.error('Error reading submissions:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to load submissions' 
+    });
   }
 });
+
+router.delete('/submissions/:id', verifyToken, apiLimiter, (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = readData();
+    
+    const initialLength = data.submissions?.length || 0;
+    data.submissions = (data.submissions || []).filter(sub => sub.id !== id);
+    
+    if (data.submissions.length === initialLength) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Submission not found' 
+      });
+    }
+    
+    writeData(data);
+    
+    res.json({ 
+      success: true, 
+      message: 'Submission deleted successfully' 
+    });
+  } catch (error) {
+    console.error('Error deleting submission:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to delete submission' 
+    });
+  }
+});
+
+router.put('/', 
+  verifyToken,
+  apiLimiter,
+  contentUpdateValidation, 
+  validate,
+  (req, res) => {
+    try {
+      const { section, data } = req.body;
+      
+      const currentDb = readData();
+      
+      if (!currentDb.content) {
+        currentDb.content = {};
+      }
+      
+      currentDb.content[section] = data;
+      currentDb.lastUpdated = new Date().toISOString();
+      currentDb.lastUpdatedBy = 'admin';
+      
+      writeData(currentDb);
+      
+      res.json({ 
+        success: true, 
+        message: `${section} updated successfully`,
+        updatedSection: section,
+        timestamp: currentDb.lastUpdated
+      });
+
+    } catch (error) {
+      console.error('Error updating content:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Failed to update content' 
+      });
+    }
+  }
+);
 
 export default router;

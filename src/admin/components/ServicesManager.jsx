@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { API_ENDPOINTS, authenticatedFetch, getAuthHeaders } from '../../config/api';
+import '../styles/ServicesManager.css';
 
 const ServicesManager = () => {
   const [items, setItems] = useState([]);
@@ -10,12 +12,22 @@ const ServicesManager = () => {
   const availableIcons = ['Code', 'Design', 'Shopping', 'Phone', 'Mail', 'Globe', 'Link'];
 
   useEffect(() => {
-    fetch('http://localhost:5001/api/content')
-      .then(res => res.json())
-      .then(res => {
-        if (res.success && res.content.services) setItems(res.content.services);
+    const fetchServices = async () => {
+      try {
+        const response = await fetch(API_ENDPOINTS.content);
+        const res = await response.json();
+        
+        if (res.success && res.content.services) {
+          setItems(res.content.services);
+        }
         setLoading(false);
-      });
+      } catch (err) {
+        console.error('Failed to load services:', err);
+        setLoading(false);
+      }
+    };
+
+    fetchServices();
   }, []);
 
   const handleChange = (index, field, value) => {
@@ -24,23 +36,39 @@ const ServicesManager = () => {
     setItems(newItems);
   };
 
-  const addItem = () => setItems([...items, { icon: 'Code', title: 'New Service', description: 'Service description...' }]);
-  const removeItem = (index) => setItems(items.filter((_, i) => i !== index));
+  const addItem = () => {
+    setItems([...items, { 
+      icon: 'Code', 
+      title: 'New Service', 
+      description: 'Service description...' 
+    }]);
+  };
+
+  const removeItem = (index) => {
+    setItems(items.filter((_, i) => i !== index));
+  };
 
   const handleSave = async () => {
     setSaving(true);
+    
     try {
-      const res = await fetch('http://localhost:5001/api/content', {
+      const response = await authenticatedFetch(API_ENDPOINTS.content, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify({ section: 'services', data: items })
       });
-      const result = await res.json();
+      
+      const result = await response.json();
+      
       if (result.success) {
         setMessage('Services updated!');
         setTimeout(() => setMessage(''), 5000);
+      } else {
+        setMessage(result.message || 'Failed to save.');
+        setTimeout(() => setMessage(''), 5000);
       }
-    } catch {
+    } catch (error) {
+      console.error('Save failed:', error);
       setMessage('Failed to save.');
       setTimeout(() => setMessage(''), 5000);
     } finally {
@@ -51,34 +79,67 @@ const ServicesManager = () => {
   if (loading) return <p>Loading...</p>;
 
   return (
-    <div className="admin-form">
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
+    <div className="admin-form services-manager">
+      <div className="services-manager__grid">
         {items.map((item, index) => (
-          <div key={index} style={{ padding: '1rem', border: '1px solid #ddd', borderRadius: '4px', backgroundColor: 'white' }}>
-            <div style={{ marginBottom: '0.5rem' }}>
+          <div key={index} className="services-manager__item-card">
+            <div className="services-manager__form-group">
               <label>Icon</label>
               <select 
                 value={item.icon} 
                 onChange={(e) => handleChange(index, 'icon', e.target.value)}
               >
-                {availableIcons.map(icon => <option key={icon} value={icon}>{icon}</option>)}
+                {availableIcons.map(icon => (
+                  <option key={icon} value={icon}>{icon}</option>
+                ))}
               </select>
             </div>
-            <div style={{ marginBottom: '0.5rem' }}>
+
+            <div className="services-manager__form-group">
               <label>Title</label>
-              <input type="text" value={item.title} onChange={(e) => handleChange(index, 'title', e.target.value)} style={{ width: '100%', padding: '0.5rem' }} />
+              <input 
+                type="text" 
+                value={item.title} 
+                onChange={(e) => handleChange(index, 'title', e.target.value)} 
+                className="services-manager__input"
+              />
             </div>
-            <div style={{ marginBottom: '0.5rem' }}>
+
+            <div className="services-manager__form-group">
               <label>Description</label>
-              <textarea value={item.description} onChange={(e) => handleChange(index, 'description', e.target.value)} rows="3" style={{ width: '100%', padding: '0.5rem' }} />
+              <textarea 
+                value={item.description} 
+                onChange={(e) => handleChange(index, 'description', e.target.value)} 
+                rows="3"
+                className="services-manager__textarea"
+              />
             </div>
-            <button onClick={() => removeItem(index)} style={{ padding: '0.5rem', width: '100%', background: '#ff6b6b', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Remove</button>
+
+            <button 
+              onClick={() => removeItem(index)} 
+              className="services-manager__remove-btn"
+            >
+              Remove
+            </button>
           </div>
         ))}
-        <button onClick={addItem} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem', border: '2px dashed #ccc', borderRadius: '4px', cursor: 'pointer' }}>+ Add Service</button>
+        <button 
+          onClick={addItem} 
+          className="services-manager__add-btn"
+        >
+          + Add Service
+        </button>
       </div>
-      <button onClick={handleSave} disabled={saving} style={{ padding: '0.75rem 1.5rem', background: '#96bb7c', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>{saving ? 'Saving...' : 'Save All Changes'}</button>
-      {message && <p style={{ marginTop: '1rem', color: 'green' }}>{message}</p>}
+
+      <button 
+        onClick={handleSave} 
+        disabled={saving} 
+        className="services-manager__save-btn"
+      >
+        {saving ? 'Saving...' : 'Save All Changes'}
+      </button>
+      
+      {message && <p className="services-manager__message">{message}</p>}
     </div>
   );
 };

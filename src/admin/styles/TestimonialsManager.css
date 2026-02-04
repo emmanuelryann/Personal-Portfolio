@@ -1,0 +1,98 @@
+.testimonials-manager__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.testimonials-manager__item-card {
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+}
+
+.testimonials-manager__image-section {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.testimonials-manager__avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.testimonials-manager__upload-wrapper {
+  flex: 1;
+}
+
+.testimonials-manager__file-input {
+  font-size: 0.8rem;
+}
+
+.testimonials-manager__image-url {
+  font-size: 0.7rem;
+  color: #666;
+  margin-top: 0.2rem;
+}
+
+.testimonials-manager__form-group {
+  margin-bottom: 1rem;
+}
+
+.testimonials-manager__remove-btn {
+  margin-top: 0.5rem;
+  padding: 0.4rem;
+  width: 100%;
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.testimonials-manager__remove-btn:hover {
+  background: #ee5a5a;
+}
+
+.testimonials-manager__add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  border: 2px dashed #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  background: none;
+}
+
+.testimonials-manager__add-btn:hover {
+  border-color: #999;
+  background: #fafafa;
+}
+
+.testimonials-manager__save-btn {
+  padding: 0.75rem 1.5rem;
+  background: #96bb7c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.testimonials-manager__save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.testimonials-manager__save-btn:hover:not(:disabled) {
+  background: #86ab6c;
+}
+
+.testimonials-manager__message {
+  margin-top: 1rem;
+  color: green;
+}

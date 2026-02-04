@@ -117,16 +117,14 @@
         "title": "Full-Stack Developer",
         "company": "Freelance",
         "location": "Accra, Ghana",
-        "type": "FULLTIME",
-        "description": "Built and maintained responsive, high-performance websites using\nmodern front-end and back-end technologies."
+        "type": "FULL TIME"
       },
       {
         "date": "Jan 2025 - Present",
         "title": "UI/UX Designer",
         "company": "Freelance",
         "location": "Accra, Ghana",
-        "type": "FULL TIME",
-        "description": "Designed and implemented responsive websites and user interfaces for various clients."
+        "type": "FULL TIME"
       }
     ],
     "education": [
@@ -134,131 +132,58 @@
         "date": "Jan 2026 - Present",
         "title": "B.Sc. Information Technology",
         "institution": "Central University",
-        "location": "Accra, Ghana",
-        "type": "MASTERS",
-        "description": "Specialized in distributed systems and advanced algorithms."
+        "location": "Accra, Ghana"
       },
       {
         "date": "Feb 2025 – Oct 2025",
         "title": "ATHE Diploma in Information Technology ",
         "institution": "Central University",
-        "location": "Accra, Ghana",
-        "type": "DIPLOMA",
-        "description": "Graduated with honors. Active member of the Computer Science club."
+        "location": "Accra, Ghana"
       },
       {
         "date": "Dec 2022 – Jan 2024",
         "title": "NIIT Web Development Course ",
-        "company": "National Institute of Information Technology",
-        "description": "Description...",
+        "institution": "National Institute of Information Technology",
         "location": "Delta State, Nigeria"
       },
       {
         "date": "Sep 2013 – Jun 2019",
         "title": "West African Senior School Certificate Examination ",
-        "company": "Federal Government College ",
-        "description": "Description...",
+        "institution": "Federal Government College ",
         "location": "Delta State, Nigeria"
       }
     ],
-    "testimonials": [
-      {
-        "image": "http://localhost:5001/uploads/IMG-2543-1769919435702.jpg",
-        "text": "I love football",
-        "name": "Robert Peter",
-        "title": "Football Manager"
-      },
-      {
-        "image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
-        "text": "Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.",
-        "name": "Sarah Johnson",
-        "title": "CEO, Company Inc"
-      },
-      {
-        "image": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
-        "text": "Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.",
-        "name": "Michael Chen",
-        "title": "Creative Director"
-      }
-    ],
+    "testimonials": [],
     "contactInfo": {
-      "phone": "+1 234 567 8900",
-      "email": "info@example.com",
-      "website": "www.example.com"
+      "phone": "+233 5 379 148 90",
+      "email": "emmanuelryan4621@gmail.com",
+      "location": "Accra, Ghana"
     }
   },
   "submissions": [
     {
-      "id": "1770005046569",
+      "id": "1770188577143",
       "firstName": "Ryan",
       "lastName": "Emmanuel",
       "email": "emmanuelryan3@gmail.com",
       "subject": "Testing this implementation",
-      "message": "Eight time",
-      "date": "2026-02-02T04:04:06.569Z"
+      "message": "Is this the tenth try???",
+      "date": "2026-02-04T07:02:57.144Z",
+      "ip": "::1",
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36"
     },
     {
-      "id": "1770003335903",
+      "id": "1770184732926",
       "firstName": "Ryan",
       "lastName": "Emmanuel",
       "email": "emmanuelryan3@gmail.com",
       "subject": "Testing this implementation",
-      "message": "Eight try",
-      "date": "2026-02-02T03:35:35.903Z"
-    },
-    {
-      "id": "1770003292792",
-      "firstName": "Ryan",
-      "lastName": "Emmanuel",
-      "email": "emmanuelryan3@gmail.com",
-      "subject": "Testing this implementation",
-      "message": "Seventh try",
-      "date": "2026-02-02T03:34:52.792Z"
-    },
-    {
-      "id": "1770002596455",
-      "firstName": "Ryan",
-      "lastName": "Emmanuel",
-      "email": "emmanuelryan3@gmail.com",
-      "subject": "Testing this implementation",
-      "message": "This should be my sixth test",
-      "date": "2026-02-02T03:23:16.456Z"
-    },
-    {
-      "id": "1770001306884",
-      "firstName": "Ryan",
-      "lastName": "Emmanuel",
-      "email": "emmanuelryan3@gmail.com",
-      "subject": "Testing this implementation",
-      "message": "This should be the fifth test",
-      "date": "2026-02-02T03:01:46.886Z"
-    },
-    {
-      "id": "1769921745239",
-      "firstName": "Ryan",
-      "lastName": "Emmanuel",
-      "email": "emmanuelryan3@gmail.com",
-      "subject": "Testing this implementation",
-      "message": "Fourth try",
-      "date": "2026-02-01T04:55:45.239Z"
-    },
-    {
-      "id": "1769920390859",
-      "firstName": "Ryan",
-      "lastName": "Emmanuel",
-      "email": "emmanuelryan3@gmail.com",
-      "subject": "Testing this implementation",
-      "message": "Third try",
-      "date": "2026-02-01T04:33:10.859Z"
-    },
-    {
-      "id": "1769920360518",
-      "firstName": "Ryan",
-      "lastName": "Emmanuel",
-      "email": "emmanuelryan3@gmail.com",
-      "subject": "Testing this implementation",
-      "message": "This is the second try",
-      "date": "2026-02-01T04:32:40.519Z"
+      "message": "Ninth try???",
+      "date": "2026-02-04T05:58:52.926Z",
+      "ip": "::1",
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36"
     }
-  ]
+  ],
+  "lastUpdated": "2026-02-04T07:04:45.321Z",
+  "lastUpdatedBy": "admin"
 }

@@ -1,4 +1,3 @@
-/* Portfolio Website - Orbit Theme Styling */
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap');
 
 /* ========== CSS Variables ========== */
@@ -153,12 +152,12 @@ img {
 }
 
 /* .mobile-menu-btn:hover{
-    background-color: var(--secondary-hover);
+  background-color: var(--secondary-hover);
 } */
 
 .mobile-menu-btn:focus {
-    border: none;
-    outline: none;
+  border: none;
+  outline: none;
 }
 
 .mobile-menu-btn span {
@@ -173,7 +172,6 @@ img {
   background-color: var(--text-dark);
 }
 
-/* Hamburger to X transformation */
 .mobile-menu-btn.active span {
   background-color: var(--bg-white) !important;
 }
@@ -209,7 +207,6 @@ img {
   visibility: visible;
 }
 
-/* Scroll lock when menu is open */
 body.menu-open {
   overflow: hidden;
 }
@@ -257,7 +254,7 @@ body.menu-open {
   font-size: clamp(1.5rem, 5vw, 2.5rem);
   font-weight: 700;
   color: var(--text-dark);
-  margin-bottom: clamp(3rem, 8vh, 5rem); /* Increased from ~3.125rem */
+  margin-bottom: clamp(3rem, 8vh, 5rem);
   text-align: center;
   position: relative;
 }
@@ -327,13 +324,12 @@ body.menu-open {
 
 
 /* ========== Skills Grid ========== */
-/* ========== Skills Grid ========== */
 .skills-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 1.5rem;
-  justify-content: center; /* Center aligning chips */
-  margin-top: 2.5rem; /* Increased spacing from title */
+  justify-content: center;
+  margin-top: 2.5rem;
 }
 
 .skill-card {
@@ -343,12 +339,11 @@ body.menu-open {
   background-color: var(--bg-white);
   padding: 0.75rem 1.25rem;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); /* Subtle shadow for depth */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   border: 1px solid #eee;
   min-width: 140px;
 }
 
-/* Removed hover transform and box-shadow expansion as requested */
 .skill-card:hover {
   border-color: var(--primary-color);
 }
@@ -389,14 +384,14 @@ body.menu-open {
   overflow: hidden;
   border-radius: 0.3125rem;
   cursor: pointer;
-  background: #f0f0f0; /* Fallback for transparency */
+  background: #f0f0f0;
 }
 
 .portfolio-item img {
   width: 100%;
   height: min(17.5rem, 35vh);
   object-fit: cover;
-  display: block; /* Removes bottom whitespace */
+  display: block;
   transition: var(--transition);
 }
 
@@ -407,7 +402,7 @@ body.menu-open {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(150, 187, 124, 0.9);
+  background-color: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -494,7 +489,7 @@ body.menu-open {
   position: relative;
   padding-bottom: 2rem;
   margin-bottom: 2rem;
-  border-bottom: 1px solid #ddd; /* Separator line */
+  border-bottom: 1px solid #ddd;
 }
 
 .resume-item:last-child {
@@ -503,7 +498,6 @@ body.menu-open {
   padding-bottom: 0;
 }
 
-/* Removed old left-border/circle styles */
 .resume-item::before {
   content: none;
 }
@@ -528,8 +522,8 @@ body.menu-open {
 }
 
 .resume-badge {
-  background-color: #d4edda; /* Light green bg */
-  color: #155724; /* Dark green text */
+  background-color: #d4edda;
+  color: #155724;
   padding: 0.25rem 0.75rem;
   border-radius: 50px;
   font-size: 0.75rem;
@@ -553,28 +547,25 @@ body.menu-open {
   gap: 0.5rem;
 }
 
-/* Hide date if needed, but we included it in meta-row */
 .resume-date {
   display: none; 
 }
 
-/* Icons in meta row */
 .meta-item svg {
   color: #ccc;
 }
 
 
 /* ========== Testimonials Section ========== */
-
 .testimonials-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 2 columns like Orbit theme */
-  gap: 3rem; /* Larger gap for breathing room */
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3rem;
 }
 
 @media (max-width: 768px) {
   .testimonials-grid {
-    grid-template-columns: 1fr; /* Stack on mobile */
+    grid-template-columns: 1fr;
   }
 }
 
@@ -583,7 +574,7 @@ body.menu-open {
   align-items: flex-start;
   gap: 1.5rem;
   background: transparent;
-  box-shadow: none; /* Removed card shadow, moved to bubble */
+  box-shadow: none;
   padding: 0;
 }
 
@@ -597,7 +588,7 @@ body.menu-open {
   border-radius: 50%;
   object-fit: cover;
   border: none;
-  filter: grayscale(100%); /* Optional: Matches the black/white look in screenshot, remove if not desired */
+  filter: grayscale(100%);
   transition: filter 0.3s ease;
 }
 
@@ -609,16 +600,15 @@ body.menu-open {
   background-color: var(--bg-white);
   padding: 2rem;
   border-radius: 4px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05); /* Subtle shadow */
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
   position: relative;
   flex: 1;
 }
 
-/* The Triangle Pointer */
 .testimonial-bubble::before {
   content: '';
   position: absolute;
-  top: 1.5rem; /* Align with top of avatar */
+  top: 1.5rem;
   left: -10px;
   width: 0; 
   height: 0; 
@@ -635,7 +625,6 @@ body.menu-open {
   font-style: normal;
 }
 
-/* Removed old quote mark styling */
 .testimonial-text::before {
   content: none;
 }
@@ -660,8 +649,8 @@ body.menu-open {
 .contact-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8rem; /* Increased from 3.75rem for better separation */
-  align-items: center; /* Vertically center if needed */
+  gap: 8rem;
+  align-items: center;
 }
 
 .form-row {
@@ -685,7 +674,7 @@ body.menu-open {
   font-size: clamp(0.875rem, 2vw, 1rem);
   transition: var(--transition);
   background-color: transparent;
-  color: var(--text-dark); /* Darker text color */
+  color: var(--text-dark);
 }
 
 .form-group input:focus,
@@ -776,27 +765,27 @@ body.menu-open {
 
 .footer-content {
   display: grid;
-  grid-template-columns: 1fr 1.5fr; /* 2 main columns: About vs Links Group */
-  gap: 5rem; /* Spacious gap between About and the links */
+  grid-template-columns: 1fr 1.5fr;
+  gap: 5rem;
   margin-bottom: clamp(1.5rem, 5vh, 3.125rem);
 }
 
 .footer-links-wrapper {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 columns for Nav, Contact, Connect */
-  gap: 2rem; /* Closer spacing between these columns */
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
 }
 
 @media (max-width: 900px) {
   .footer-content {
-    grid-template-columns: 1fr; /* Stack main columns on smaller screens */
+    grid-template-columns: 1fr;
     gap: 3rem;
   }
 }
 
 @media (max-width: 600px) {
   .footer-links-wrapper {
-    grid-template-columns: 1fr; /* Stack links on mobile */
+    grid-template-columns: 1fr;
     gap: 2rem;
   }
 }

@@ -6,13 +6,13 @@ import App from './myportfolio/index.jsx'
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import LoginPage from './admin/LoginPage';
-import Dashboard from './admin/Dashboard';
+import LoginPage from './admin/components/LoginPage.jsx';
+import Dashboard from './admin/components/Dashboard.jsx';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
-  if (loading) return null; // or a spinner
+  if (loading) return null;
   return isAuthenticated ? children : <Navigate to="/admin/login" />;
 };
 

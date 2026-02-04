@@ -1,0 +1,116 @@
+.skills-manager__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.skills-manager__item-card {
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+}
+
+.skills-manager__icon-section {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.skills-manager__icon-preview {
+  width: 50px;
+  height: 50px;
+  border: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+}
+
+.skills-manager__icon-preview img {
+  max-width: 80%;
+  max-height: 80%;
+}
+
+.skills-manager__no-icon {
+  font-size: 0.8rem;
+  color: #ccc;
+}
+
+.skills-manager__upload-wrapper {
+  flex: 1;
+}
+
+.skills-manager__file-input {
+  font-size: 0.8rem;
+  width: 100%;
+}
+
+.skills-manager__url-input {
+  font-size: 0.7rem;
+  margin-top: 0.25rem;
+  padding: 0.25rem;
+  width: 100%;
+}
+
+.skills-manager__name-section {
+  margin-bottom: 0.5rem;
+}
+
+.skills-manager__remove-btn {
+  padding: 0.3rem 0.5rem;
+  background-color: #ff6b6b;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  width: 100%;
+  margin-top: 0.5rem;
+  cursor: pointer;
+}
+
+.skills-manager__remove-btn:hover {
+  background-color: #ee5a5a;
+}
+
+.skills-manager__add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  border: 2px dashed #ccc;
+  border-radius: 4px;
+  background: none;
+  cursor: pointer;
+  min-height: 150px;
+}
+
+.skills-manager__add-btn:hover {
+  border-color: #999;
+  background: #fafafa;
+}
+
+.skills-manager__save-btn {
+  padding: 0.75rem 1.5rem;
+  background: #96bb7c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.skills-manager__save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.skills-manager__save-btn:hover:not(:disabled) {
+  background: #86ab6c;
+}
+
+.skills-manager__message {
+  margin-top: 1rem;
+  color: green;
+}

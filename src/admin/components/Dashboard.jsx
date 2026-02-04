@@ -1,17 +1,16 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import './admin.css'; // Import global admin styles
+import '../styles/admin.css';
 
-// Component imports (will be created next)
-import BioEditor from './components/BioEditor';
-import SkillsManager from './components/SkillsManager';
-import PortfolioManager from './components/PortfolioManager';
-import ServicesManager from './components/ServicesManager';
-import ResumeManager from './components/ResumeManager';
-import TestimonialsManager from './components/TestimonialsManager';
-import ContactMessages from './components/ContactMessages';
-import Settings from './components/Settings';
+import BioEditor from './BioEditor';
+import SkillsManager from './SkillsManager';
+import PortfolioManager from './PortfolioManager';
+import ServicesManager from './ServicesManager';
+import ResumeManager from './ResumeManager';
+import TestimonialsManager from './TestimonialsManager';
+import ContactMessages from './ContactMessages';
+import Settings from './Settings';
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('bio');
@@ -20,7 +19,6 @@ const Dashboard = () => {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
-  // Handle body scroll locking
   useEffect(() => {
     if (showLogoutModal || sidebarOpen) {
       document.body.style.overflow = 'hidden';
@@ -34,7 +32,7 @@ const Dashboard = () => {
 
   const handleLogoutClick = () => {
     setShowLogoutModal(true);
-    setSidebarOpen(false); // Close sidebar if open on mobile
+    setSidebarOpen(false);
   };
 
   const confirmLogout = () => {
@@ -104,7 +102,7 @@ const Dashboard = () => {
               key={tab.id}
               onClick={() => {
                 setActiveTab(tab.id);
-                setSidebarOpen(false); // Close sidebar on selection (mobile)
+                setSidebarOpen(false);
               }}
               className={`admin-nav-item ${activeTab === tab.id ? 'active' : ''}`}
             >

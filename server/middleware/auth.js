@@ -1,8 +1,5 @@
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
-
-// Middleware to verify JWT token
 export const verifyToken = (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -14,10 +11,11 @@ export const verifyToken = (req, res, next) => {
       });
     }
 
-    const token = authHeader.substring(7); // Remove 'Bearer '
+    const token = authHeader.substring(7);
     
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.admin = decoded; // Attach admin info to request
+    // Access secret inside the function to ensure it's loaded from .env
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.admin = decoded;
     next();
     
   } catch (error) {
@@ -40,7 +38,7 @@ export const verifyToken = (req, res, next) => {
   }
 };
 
-// Helper to generate JWT token
 export const generateToken = (payload) => {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
+  // Access secret inside the function to ensure it's loaded from .env
+  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '24h' });
 };

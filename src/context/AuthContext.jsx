@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { API_BASE_URL } from '../config/api';
 
 const AuthContext = createContext();
 
@@ -9,9 +10,9 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is logged in (persisted in localStorage)
-    const storedAuth = localStorage.getItem('adminAuth');
-    if (storedAuth === 'true') {
+    // Check if user is logged in (presence of valid-looking token)
+    const token = localStorage.getItem('adminToken');
+    if (token) {
       setIsAuthenticated(true);
     }
     setLoading(false);
@@ -19,7 +20,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (password) => {
     try {
-      const response = await fetch('http://localhost:5001/api/auth/login', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password })
@@ -27,12 +28,13 @@ export const AuthProvider = ({ children }) => {
       
       const data = await response.json();
       
-      if (data.success) {
+      if (data.success && data.token) {
         setIsAuthenticated(true);
-        localStorage.setItem('adminAuth', 'true');
+        // Store the actual JWT token
+        localStorage.setItem('adminToken', data.token);
         return { success: true };
       } else {
-        return { success: false, message: data.message };
+        return { success: false, message: data.message || 'Invalid credentials' };
       }
     } catch (error) {
       console.error('Login failed:', error);
@@ -42,7 +44,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     setIsAuthenticated(false);
-    localStorage.removeItem('adminAuth');
+    localStorage.removeItem('adminToken');
   };
 
   return (
