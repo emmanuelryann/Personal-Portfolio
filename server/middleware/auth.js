@@ -13,7 +13,6 @@ export const verifyToken = (req, res, next) => {
 
     const token = authHeader.substring(7);
     
-    // Access secret inside the function to ensure it's loaded from .env
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.admin = decoded;
     next();
@@ -39,6 +38,5 @@ export const verifyToken = (req, res, next) => {
 };
 
 export const generateToken = (payload) => {
-  // Access secret inside the function to ensure it's loaded from .env
   return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '24h' });
 };

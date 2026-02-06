@@ -217,6 +217,15 @@ function Portfolio() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Centralized Mobile Menu Scroll Lock
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.classList.add('menu-open');
+    } else {
+      document.body.classList.remove('menu-open');
+    }
+  }, [isMobileMenuOpen]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -294,10 +303,7 @@ function Portfolio() {
       {/* Mobile Overlay */}
       <div 
         className={`mobile-overlay ${isMobileMenuOpen ? 'active' : ''}`}
-        onClick={() => {
-          setIsMobileMenuOpen(false);
-          document.body.classList.remove('menu-open');
-        }}
+        onClick={() => setIsMobileMenuOpen(false)}
       ></div>
 
       {/* Header */}
@@ -318,10 +324,7 @@ function Portfolio() {
           </nav>
           <button 
             className={`mobile-menu-btn ${isMobileMenuOpen ? 'active' : ''}`}
-            onClick={() => {
-              setIsMobileMenuOpen(!isMobileMenuOpen);
-              document.body.classList.toggle('menu-open', !isMobileMenuOpen);
-            }}
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             <span></span>
             <span></span>
