@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { API_ENDPOINTS, authenticatedFetch, getAuthHeaders } from '../../config/api';
+import { API_ENDPOINTS, authenticatedFetch, getAuthHeaders, formatValidationErrors } from '../../config/api';
 import '../styles/BioEditor.css';
 
 const BioEditor = () => {
@@ -50,7 +50,7 @@ const BioEditor = () => {
         setMessage('Bio updated successfully!');
         setTimeout(() => setMessage(''), 5000);
       } else {
-        setMessage(result.message || 'Failed to save changes.');
+        setMessage(formatValidationErrors(result) || 'Failed to save changes.');
         setTimeout(() => setMessage(''), 5000);
       }
     } catch (error) {

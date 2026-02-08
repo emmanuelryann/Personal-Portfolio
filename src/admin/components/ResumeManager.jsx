@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { API_ENDPOINTS, authenticatedFetch, getAuthHeaders } from '../../config/api';
+import { API_ENDPOINTS, authenticatedFetch, getAuthHeaders, formatValidationErrors } from '../../config/api';
 import '../styles/ResumeManager.css';
 
 const ResumeManager = () => {
@@ -29,7 +29,6 @@ const ResumeManager = () => {
     fetchResumeData();
   }, []);
 
-  // Generic handler for both lists
   const handleChange = (list, setList, index, field, value) => {
     const newList = [...list];
     newList[index][field] = value;
@@ -62,24 +61,34 @@ const ResumeManager = () => {
     
     try {
       // Save Experience
-      await authenticatedFetch(API_ENDPOINTS.content, {
+      const expResponse = await authenticatedFetch(API_ENDPOINTS.content, {
         method: 'PUT',
         headers: getAuthHeaders(),
         body: JSON.stringify({ section: 'experience', data: experience })
       });
+      const expData = await expResponse.json();
+
+      if (!expData.success) {
+        throw new Error(formatValidationErrors(expData));
+      }
       
       // Save Education
-      await authenticatedFetch(API_ENDPOINTS.content, {
+      const eduResponse = await authenticatedFetch(API_ENDPOINTS.content, {
         method: 'PUT',
         headers: getAuthHeaders(),
         body: JSON.stringify({ section: 'education', data: education })
       });
+      const eduData = await eduResponse.json();
+
+      if (!eduData.success) {
+        throw new Error(formatValidationErrors(eduData));
+      }
       
       setMessage('Resume updated!');
       setTimeout(() => setMessage(''), 5000);
     } catch (error) {
       console.error('Save failed:', error);
-      setMessage('Failed to save.');
+      setMessage(error.message || 'Failed to save.');
       setTimeout(() => setMessage(''), 5000);
     } finally {
       setSaving(false);
@@ -102,10 +111,10 @@ const ResumeManager = () => {
               placeholder={isEducation ? "Degree Title" : "Job Title"}
               value={item.title} 
               onChange={(e) => handleChange(list, setList, index, 'title', e.target.value)} 
-              className="resume-manager__input"
-            />
+            className="resume-manager__input"
+          />
           </div>
-          <div style={{ marginBottom: '1rem' }}>
+          <div className="resume-manager__form-group">
             <input
               placeholder={companyLabel}
               value={item.company || item.institution}

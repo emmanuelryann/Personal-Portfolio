@@ -1,13 +1,73 @@
 /* Admin Global Styles */
+
+/* Login Page Styles */
+.admin-login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100vw;
+  background-color: #f8f9fa;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.admin-login-card {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+.admin-login-title {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.admin-login-form-group {
+  margin-bottom: 1rem;
+}
+
+.admin-login-error {
+  color: red;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.admin-login-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #96bb7c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.admin-login-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.admin-login-btn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
 .admin-form input,
 .admin-form textarea,
 .admin-form select {
   width: 100%;
   padding: 0.75rem;
   background: transparent;
-  border: 1px solid #ccc; /* Visible border */
+  border: 1px solid #ccc;
   border-radius: 4px;
-  color: #333; /* Dark text */
+  color: #333;
   font-size: 1rem;
   margin-bottom: 1rem;
 }
@@ -16,7 +76,7 @@
 .admin-form textarea:focus,
 .admin-form select:focus {
   outline: none;
-  border-color: #96bb7c; /* Match primary color */
+  border-color: #96bb7c;
 }
 
 .admin-form label {
@@ -26,11 +86,28 @@
   color: #333;
 }
 
+.admin-login-btn {
+  width: '100%';
+  padding: '0.75rem';
+  background-color: '#96bb7c';
+  color: 'white';
+  border: 'none';
+  border-radius: '4px';
+  font-size: '1rem';
+  cursor: pointer;
+  opacity: 1;
+}
+
+.admin-login-btn.loading {
+  cursor: 'not-allowed';
+  opacity: 0.7 
+}
+
 /* Admin Layout */
 .admin-dashboard {
   display: flex;
   height: 100vh;
-  overflow: hidden; /* Prevent body scroll */
+  overflow: hidden;
 }
 
 /* Sidebar */
@@ -41,8 +118,8 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  flex-shrink: 0; /* Prevent shrinking */
-  overflow-y: auto; /* Allow sidebar scroll if too tall */
+  flex-shrink: 0;
+  overflow-y: auto;
 }
 
 .admin-sidebar-header {
@@ -93,15 +170,22 @@
 /* Main Content */
 .admin-content {
   flex: 1;
-  overflow-y: auto; /* Scrollable content */
+  min-width: 0;
+  overflow-y: auto;
   padding: 2rem;
   background-color: #f8f9fa;
   height: 100vh;
 }
 
+.admin-section-title {
+  margin-bottom: '2rem';
+  border-bottom: '2px solid #ddd';
+  padding-bottom: '0.5rem'
+}
+
 /* Hamburger Menu Button */
 .admin-hamburger {
-  display: none; /* Hidden on desktop */
+  display: none;
   flex-direction: column;
   justify-content: space-between;
   width: 1.5rem;
@@ -109,7 +193,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  z-index: 1000; /* Lower than sidebar (1002) so it gets covered */
+  z-index: 1000;
   position: fixed;
   top: 1rem;
   left: 1rem;
@@ -119,13 +203,12 @@
 .admin-hamburger span {
   width: 100%;
   height: 3px;
-  background-color: #000000; /* Pure black for maximum visibility */
+  background-color: #000000;
   transition: all 0.3s ease;
   transform-origin: center;
   border-radius: 2px;
 }
 
-/* Removed active state transforms so it stays as hamburger behind sidebar */
 
 /* Mobile Sidebar Overlay */
 .admin-sidebar-overlay {
@@ -135,7 +218,7 @@
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1001; /* Above content/hamburger, below sidebar */
+  z-index: 1001;
   opacity: 0;
   visibility: hidden;
   transition: all 0.3s ease;
@@ -153,7 +236,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* 0.5 opacity dark overlay */
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -209,24 +292,31 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .admin-hamburger {
-    display: flex; /* Show hamburger on mobile */
+    display: flex;
   }
 
   .admin-sidebar {
     position: fixed;
     top: 0;
-    left: -250px; /* Hide off-screen to the left */
+    left: -250px;
     height: 100vh;
-    z-index: 1002; /* Highest z-index to cover hamburger and overlay */
+    z-index: 1002;
     transition: left 0.3s ease;
   }
 
   .admin-sidebar.active {
-    left: 0; /* Slide in */
+    left: 0;
   }
 
   .admin-content {
-    padding-top: 4rem; /* Space for hamburger */
+    padding-top: 4rem;
   }
 }
 
+
+/* Dashboard Section Title */
+.admin-section-title {
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 0.5rem;
+}

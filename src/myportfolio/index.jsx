@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import './index.css';
-import { API_ENDPOINTS } from '../config/api.js';
+import { API_ENDPOINTS, formatValidationErrors } from '../config/api.js';
 
 // SVG Icons as components
 const Icons = {
@@ -168,21 +168,17 @@ function Portfolio() {
   });
 
   useEffect(() => {
-    // Scroll listener
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
 
-      // Active Section Spy
       const sections = navLinks.map(link => link.href.substring(1));
       
-      // Determine active section by finding which one occupies the most screen space or is near top
       let currentSection = '';
       
       for (const sectionId of sections) {
         const element = document.getElementById(sectionId);
         if (element) {
           const rect = element.getBoundingClientRect();
-          // Check if top of section is near middle/top of viewport
           if (rect.top <= 150 && rect.bottom >= 150) {
               currentSection = sectionId;
           }
@@ -196,9 +192,6 @@ function Portfolio() {
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
-
-    // Fetch Content using async/await
     const fetchContent = async () => {
       try {
         const response = await fetch(API_ENDPOINTS.content);
@@ -214,8 +207,33 @@ function Portfolio() {
 
     fetchContent();
 
+    window.addEventListener('scroll', handleScroll);
+
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Intersection Observer for scroll reveal - re-run when content changes
+  useEffect(() => {
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: "0px 0px -50px 0px"
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+        }
+      });
+    }, observerOptions);
+
+    const revealElements = document.querySelectorAll('.reveal');
+    revealElements.forEach(el => observer.observe(el));
+
+    return () => {
+      revealElements.forEach(el => observer.unobserve(el));
+    };
+  }, [content]);
 
   // Centralized Mobile Menu Scroll Lock
   useEffect(() => {
@@ -229,7 +247,7 @@ function Portfolio() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    // Clear status when user starts typing
+
     if (submitStatus.message) {
       setSubmitStatus({ type: '', message: '' });
     }
@@ -255,12 +273,10 @@ function Portfolio() {
         setSubmitStatus({ type: 'success', message: data.message });
         setFormData({ firstName: '', lastName: '', email: '', subject: '', message: '' });
         
-        // Clear success message after 5 seconds
         setTimeout(() => {
           setSubmitStatus({ type: '', message: '' });
         }, 5000);
 
-        // Scroll to form to show success message
         const contactSection = document.getElementById('contact');
         if (contactSection) {
           contactSection.scrollIntoView({ behavior: 'smooth' });
@@ -268,7 +284,7 @@ function Portfolio() {
       } else {
         setSubmitStatus({ 
           type: 'error', 
-          message: data.message || 'Failed to send message. Please try again.' 
+          message: formatValidationErrors(data) || 'Failed to send message. Please try again.' 
         });
       }
     } catch (error) {
@@ -288,7 +304,7 @@ function Portfolio() {
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
-      setActiveSection(sectionId); // Set active immediately for responsiveness
+      setActiveSection(sectionId);
     }
     setIsMobileMenuOpen(false);
   };
@@ -309,7 +325,7 @@ function Portfolio() {
       {/* Header */}
       <header className={`header ${isScrolled ? 'scrolled' : ''}`}>
         <div className="container">
-          <div className="logo">ME</div>
+          <div><a href='#home' className="logo">ME</a></div>
           <nav className={`nav-menu ${isMobileMenuOpen ? 'active' : ''}`}>
             {navLinks.map(link => (
               <a 
@@ -335,7 +351,7 @@ function Portfolio() {
 
       {/* Hero Section */}
       <section id="home" className="hero">
-        <div className="hero-content">
+        <div className="hero-content reveal">
           <h1>I&apos;m Mgbeadichie Emmanuel</h1>
           <h2>A Full-stack Developer</h2>
         </div>
@@ -349,10 +365,10 @@ function Portfolio() {
               <img 
                 src={content.bio.image} 
                 alt="Profile" 
-                className="about-image"
+                className="about-image reveal"
               />
             )}
-            <div className="about-right">
+            <div className="about-right reveal">
               <div className="about-text">
                 <h3>{content.bio.heading}</h3>
                 {content.bio.paragraphs && content.bio.paragraphs.map((text, idx) => (
@@ -364,7 +380,7 @@ function Portfolio() {
                 <button className="btn-primary">Hire Me</button>
               </a>
               <a href={API_ENDPOINTS.downloadCV} target="_blank" rel="noopener noreferrer">
-                <button className="btn-primary" style={{ marginLeft: '1rem', backgroundColor: '#333' }}>Download CV</button>
+                <button className="btn-primary btn-cv">Download CV</button>
               </a>
             </div>
             </div>
@@ -372,9 +388,9 @@ function Portfolio() {
         </div>
 
         {/* Skills Section - Full Width */}
-        <div className="skills-container" style={{ marginTop: '6rem' }}>
-          <h2 className="section-title" style={{ fontSize: '2rem' }}>My Skills</h2>
-          <div className="skills-grid">
+        <div className="skills-container reveal">
+          <h2 className="section-title skills-section-title">My Skills</h2>
+          <div className="skills-grid reveal">
             {content.skills.map((skill, index) => (
               <div key={index} className="skill-card">
                 <div className="skill-icon">
@@ -389,7 +405,7 @@ function Portfolio() {
 
       {/* Portfolio Section */}
       <section id="portfolio" className="section section-alt">
-        <div className="container">
+        <div className="container reveal">
           <h2 className="section-title">My Portfolio</h2>
           <div className="portfolio-grid">
             {content.portfolio.map(item => (
@@ -406,7 +422,7 @@ function Portfolio() {
 
       {/* Services Section */}
       <section id="services" className="section">
-        <div className="container">
+        <div className="container reveal">
           <h2 className="section-title">Services</h2>
           <div className="services-grid">
             {content.services.map((service, index) => (
@@ -424,7 +440,7 @@ function Portfolio() {
 
       {/* Resume Section */}
       <section id="resume" className="section section-alt">
-        <div className="container">
+        <div className="container reveal">
           <h2 className="section-title">Resume</h2>
           <div className="resume-content">
             <div className="resume-column">
@@ -483,7 +499,7 @@ function Portfolio() {
       {/* Testimonials Section */}
       {content.testimonials && content.testimonials.length > 0 && (
         <section id="testimonials" className="section section-alt">
-          <div className="container">
+          <div className="container reveal">
             <h2 className="section-title">Happy Clients</h2>
             <div className="testimonials-grid">
               {content.testimonials.map((testimonial, index) => (
@@ -512,7 +528,7 @@ function Portfolio() {
 
       {/* Contact Section */}
       <section id="contact" className="section section-alt">
-        <div className="container">
+        <div className="container reveal">
           <h2 className="section-title">Contact Me</h2>
           <div className="contact-content">
             <div className="contact-form">
@@ -639,7 +655,7 @@ function Portfolio() {
                 </ul>
               </div>
               <div className="footer-column">
-                <h4>Contact</h4>
+                <h4>Contact</h4>  
                 <ul>
                   <li><p>Accra, Ghana</p></li>
                   <li><a href="tel:+12345678900">+233 5 379 148 90</a></li>

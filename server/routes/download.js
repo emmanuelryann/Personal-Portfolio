@@ -9,10 +9,8 @@ const uploadsDir = path.join(__dirname, '../uploads');
 
 const router = Router();
 
-// Download CV endpoint - PUBLIC but rate limited
 router.get('/', apiLimiter, (req, res) => {
   try {
-    // Ensure uploads directory exists
     if (!fs.existsSync(uploadsDir)) {
       return res.status(404).json({ 
         success: false, 
@@ -20,7 +18,6 @@ router.get('/', apiLimiter, (req, res) => {
       });
     }
     
-    // Find the latest PDF file
     const files = fs.readdirSync(uploadsDir);
     const pdfFiles = files.filter(f => f.toLowerCase().endsWith('.pdf'));
     
@@ -31,7 +28,6 @@ router.get('/', apiLimiter, (req, res) => {
       });
     }
     
-    // Get the most recent PDF (by filename timestamp)
     const latestPDF = pdfFiles.sort((a, b) => {
       const timeA = parseInt(a.split('-').pop().replace('.pdf', '')) || 0;
       const timeB = parseInt(b.split('-').pop().replace('.pdf', '')) || 0;
@@ -40,7 +36,6 @@ router.get('/', apiLimiter, (req, res) => {
     
     const cvPath = path.join(uploadsDir, latestPDF);
     
-    // Security check: Ensure the resolved path is within uploads directory
     const resolvedPath = path.resolve(cvPath);
     const resolvedUploadsDir = path.resolve(uploadsDir);
     
@@ -52,7 +47,6 @@ router.get('/', apiLimiter, (req, res) => {
       });
     }
     
-    // Verify file exists
     if (!fs.existsSync(cvPath)) {
       return res.status(404).json({ 
         success: false, 
@@ -60,11 +54,9 @@ router.get('/', apiLimiter, (req, res) => {
       });
     }
     
-    // Set headers for download
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', 'attachment; filename="Resume.pdf"');
     
-    // Stream the file
     const fileStream = fs.createReadStream(cvPath);
     
     fileStream.on('error', (err) => {

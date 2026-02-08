@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { API_ENDPOINTS, authenticatedFetch, getAuthHeaders } from '../../config/api';
+import { API_ENDPOINTS, authenticatedFetch, getAuthHeaders, formatValidationErrors } from '../../config/api';
 import '../styles/TestimonialsManager.css';
 
 const TestimonialsManager = () => {
@@ -88,7 +88,7 @@ const TestimonialsManager = () => {
         setMessage('Testimonials updated!');
         setTimeout(() => setMessage(''), 5000);
       } else {
-        setMessage(result.message || 'Failed to save.');
+        setMessage(formatValidationErrors(result) || 'Failed to save.');
         setTimeout(() => setMessage(''), 5000);
       }
     } catch (error) {

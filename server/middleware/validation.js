@@ -1,6 +1,5 @@
 import { body, validationResult } from 'express-validator';
 
-// Validation error handler
 export const validate = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -13,7 +12,6 @@ export const validate = (req, res, next) => {
   next();
 };
 
-// Contact form validation
 export const contactValidation = [
   body('firstName')
     .trim()
@@ -52,7 +50,6 @@ export const contactValidation = [
     .withMessage('Message must be between 10 and 2000 characters')
 ];
 
-// Login validation
 export const loginValidation = [
   body('password')
     .notEmpty()
@@ -61,7 +58,6 @@ export const loginValidation = [
     .withMessage('Password cannot be empty')
 ];
 
-// Password change validation
 export const passwordChangeValidation = [
   body('currentPassword')
     .notEmpty()
@@ -75,7 +71,6 @@ export const passwordChangeValidation = [
     .withMessage('Password must contain uppercase, lowercase, number, and special character')
 ];
 
-// Content update validation
 export const contentUpdateValidation = [
   body('section')
     .notEmpty()

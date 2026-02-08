@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap');
 
-/* ========== CSS Variables ========== */
+/* CSS Variables */
 :root {
   --primary-color: #96bb7c;
   --primary-hover: #7fa866;
@@ -16,7 +16,7 @@
   --transition: all 0.3s ease;
 }
 
-/* ========== Reset & Base ========== */
+/* Reset & Base */
 * {
   margin: 0;
   padding: 0;
@@ -58,7 +58,7 @@ img {
   padding: 0 clamp(0.5rem, 2vw, 1rem);
 }
 
-/* ========== Header / Navigation ========== */
+/* Header / Navigation */
 .header {
   position: fixed;
   top: 0;
@@ -85,6 +85,7 @@ img {
   width: clamp(2.5rem, 5vw, 3.125rem);
   height: clamp(2.5rem, 5vw, 3.125rem);
   background-color: var(--bg-white);
+  text-decoration: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -151,10 +152,6 @@ img {
   cursor: pointer;
 }
 
-/* .mobile-menu-btn:hover{
-  background-color: var(--secondary-hover);
-} */
-
 .mobile-menu-btn:focus {
   border: none;
   outline: none;
@@ -211,7 +208,7 @@ body.menu-open {
   overflow: hidden;
 }
 
-/* ========== Hero Section ========== */
+/* Hero Section */
 .hero {
   min-height: 100vh;
   background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
@@ -240,10 +237,22 @@ body.menu-open {
   text-transform: uppercase;
 }
 
-/* ========== Section Common Styles ========== */
+/* Section Common Styles */
 .section {
   padding: clamp(3rem, 10vh, 6.25rem) 0;
   width: 100%;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 1.2s ease-out, transform 1.2s ease-out;
+  transition-delay: 0.1s;
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .section-alt {
@@ -270,7 +279,7 @@ body.menu-open {
   background-color: var(--primary-color);
 }
 
-/* ========== About Section ========== */
+/* About Section */
 .about-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -324,8 +333,25 @@ body.menu-open {
   transform: translateY(-0.125rem);
 }
 
+.btn-cv {
+  margin-left: 1rem;
+  background-color: #333;
+}
 
-/* ========== Skills Grid ========== */
+.btn-cv:hover {
+  background-color: #000;
+}
+
+
+/* Skills Grid */
+.skills-container {
+  margin-top: 6rem;
+}
+
+.skills-section-title {
+  font-size: 2rem;
+}
+
 .skills-grid {
   display: flex;
   flex-wrap: wrap;
@@ -374,7 +400,7 @@ body.menu-open {
 }
 
 
-/* ========== Portfolio Section ========== */
+/* Portfolio Section */
 .portfolio-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -384,15 +410,15 @@ body.menu-open {
 .portfolio-item {
   position: relative;
   overflow: hidden;
-  border-radius: 0.3125rem;
+  border-radius: 0;
   cursor: pointer;
-  background: #f0f0f0;
+  background: transparent;
 }
 
 .portfolio-item img {
   width: 100%;
-  height: min(17.5rem, 35vh);
-  object-fit: cover;
+  height: auto;
+  object-fit: contain;
   display: block;
   transition: var(--transition);
 }
@@ -434,7 +460,7 @@ body.menu-open {
   transform: translateY(0);
 }
 
-/* ========== Services Section ========== */
+/* Services Section */
 .services-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -472,7 +498,7 @@ body.menu-open {
   line-height: 1.7;
 }
 
-/* ========== Resume Section ========== */
+/* Resume Section */
 .resume-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -541,7 +567,6 @@ body.menu-open {
   gap: 1.5rem;
   font-size: 0.9rem;
   color: #696868;
-  /* color: var(--text-dark) */
 }
 
 .meta-item {
@@ -559,7 +584,7 @@ body.menu-open {
 }
 
 
-/* ========== Testimonials Section ========== */
+/* Testimonials Section */
 .testimonials-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -648,7 +673,7 @@ body.menu-open {
   color: var(--primary-color);
 }
 
-/* ========== Contact Section ========== */
+/* Contact Section */
 .contact-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -753,7 +778,7 @@ body.menu-open {
   color: var(--text-color);
 }
 
-/* ========== Footer ========== */
+/* Footer */
 .footer {
   background-color: var(--bg-dark);
   color: var(--bg-white);
@@ -852,7 +877,7 @@ body.menu-open {
   font-size: clamp(0.75rem, 1.5vw, 0.9rem);
 }
 
-/* ========== Responsive Design - Layout Only ========== */
+/* Responsive Design */
 @media (max-width: 62rem) {
   .about-content,
   .resume-content,

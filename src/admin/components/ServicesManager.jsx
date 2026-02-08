@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { API_ENDPOINTS, authenticatedFetch, getAuthHeaders } from '../../config/api';
+import { API_ENDPOINTS, authenticatedFetch, getAuthHeaders, formatValidationErrors } from '../../config/api';
 import '../styles/ServicesManager.css';
 
 const ServicesManager = () => {
@@ -8,7 +8,6 @@ const ServicesManager = () => {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
 
-  // Available icons matching frontend Icon component map
   const availableIcons = ['Code', 'Design', 'Shopping', 'Phone', 'Mail', 'Globe', 'Link'];
 
   useEffect(() => {
@@ -64,7 +63,7 @@ const ServicesManager = () => {
         setMessage('Services updated!');
         setTimeout(() => setMessage(''), 5000);
       } else {
-        setMessage(result.message || 'Failed to save.');
+        setMessage(formatValidationErrors(result) || 'Failed to save.');
         setTimeout(() => setMessage(''), 5000);
       }
     } catch (error) {

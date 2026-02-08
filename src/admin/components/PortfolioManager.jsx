@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { API_ENDPOINTS, authenticatedFetch, getAuthHeaders } from '../../config/api';
+import { API_ENDPOINTS, authenticatedFetch, getAuthHeaders, formatValidationErrors } from '../../config/api';
 import '../styles/PortfolioManager.css';
 
 const PortfolioManager = () => {
@@ -83,7 +83,7 @@ const PortfolioManager = () => {
         setMessage('Portfolio updated successfully!');
         setTimeout(() => setMessage(''), 5000);
       } else {
-        setMessage(result.message || 'Failed to save.');
+        setMessage(formatValidationErrors(result) || 'Failed to save.');
         setTimeout(() => setMessage(''), 5000);
       }
     } catch (error) {

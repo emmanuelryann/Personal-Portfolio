@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { API_ENDPOINTS, authenticatedFetch, getAuthHeaders } from '../../config/api';
+import { API_ENDPOINTS, authenticatedFetch, getAuthHeaders, formatValidationErrors } from '../../config/api';
 import '../styles/SkillsManager.css';
 
 const SkillsManager = () => {
@@ -85,7 +85,7 @@ const SkillsManager = () => {
         setMessage('Skills updated successfully!');
         setTimeout(() => setMessage(''), 5000);
       } else {
-        setMessage(result.message || 'Failed to update skills.');
+        setMessage(formatValidationErrors(result) || 'Failed to update skills.');
         setTimeout(() => setMessage(''), 5000);
       }
     } catch (error) {

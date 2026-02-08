@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { API_ENDPOINTS, authenticatedFetch, getAuthHeaders } from '../../config/api';
+import { API_ENDPOINTS, authenticatedFetch, getAuthHeaders, formatValidationErrors } from '../../config/api';
 import '../styles/Settings.css';
 
 const Settings = () => {
@@ -46,12 +46,11 @@ const Settings = () => {
         setNewPassword('');
         setConfirmPassword('');
         
-        // Reload after 3 seconds
         setTimeout(() => {
           window.location.reload();
         }, 3000);
       } else {
-        setMessage(data.message || 'Failed to update password');
+        setMessage(formatValidationErrors(data) || 'Failed to update password');
         setIsError(true);
         setTimeout(() => { setMessage(''); setIsError(false); }, 5000);
       }

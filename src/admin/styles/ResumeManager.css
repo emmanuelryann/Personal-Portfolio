@@ -23,6 +23,10 @@
   margin-bottom: 1rem;
 }
 
+.resume-manager__form-group {
+  margin-bottom: 1rem;
+}
+
 .resume-manager__input {
   padding: 0.5rem;
 }

@@ -9,7 +9,6 @@ const ContactMessages = () => {
   useEffect(() => {
     const fetchSubmissions = async () => {
       try {
-        // This endpoint requires authentication
         const response = await authenticatedFetch(API_ENDPOINTS.submissions);
         const res = await response.json();
         

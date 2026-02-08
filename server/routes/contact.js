@@ -11,9 +11,8 @@ const dataPath = path.join(__dirname, '../data.json');
 
 const router = Router();
 
-// POST /api/contact - PUBLIC with strict rate limiting
 router.post('/', 
-  contactLimiter, // 5 submissions per hour
+  contactLimiter,
   contactValidation, 
   validate, 
   async (req, res) => {
@@ -28,22 +27,19 @@ router.post('/',
         subject, 
         message,
         date: new Date().toISOString(),
-        ip: req.ip || req.connection.remoteAddress, // Track IP for spam prevention
+        ip: req.ip || req.connection.remoteAddress,
         userAgent: req.get('user-agent')
       };
 
-      // Save to database
       try {
         const db = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
         
-        // Initialize submissions array if it doesn't exist
         if (!db.submissions) {
           db.submissions = [];
         }
         
-        db.submissions.unshift(submission); // Add to top
+        db.submissions.unshift(submission);
         
-        // Keep only last 1000 submissions to prevent file bloat
         if (db.submissions.length > 1000) {
           db.submissions = db.submissions.slice(0, 1000);
         }
@@ -51,16 +47,13 @@ router.post('/',
         fs.writeFileSync(dataPath, JSON.stringify(db, null, 2));
       } catch (dbError) {
         console.error('Database error:', dbError);
-        // Continue even if DB save fails - email is more important
       }
 
-      // Send email
       try {
         await sendContactEmail({ firstName, lastName, email, subject, message });
       } catch (emailError) {
         console.error('Email error:', emailError);
-        // Log but don't fail the request
-        // You might want to implement a retry mechanism here
+        // Log but don't fail the request. Might want to implement a retry mechanism here
       }
 
       res.status(200).json({

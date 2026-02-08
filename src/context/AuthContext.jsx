@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { API_BASE_URL } from '../config/api';
+import { API_ENDPOINTS } from '../config/api';
 
 const AuthContext = createContext();
 
@@ -10,7 +10,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is logged in (presence of valid-looking token)
     const token = localStorage.getItem('adminToken');
     if (token) {
       setIsAuthenticated(true);
@@ -20,7 +19,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (password) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+      const response = await fetch(API_ENDPOINTS.login, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password })
@@ -30,11 +29,13 @@ export const AuthProvider = ({ children }) => {
       
       if (data.success && data.token) {
         setIsAuthenticated(true);
-        // Store the actual JWT token
         localStorage.setItem('adminToken', data.token);
         return { success: true };
       } else {
-        return { success: false, message: data.message || 'Invalid credentials' };
+        const errorMsg = data.errors && Array.isArray(data.errors) && data.errors.length > 0
+          ? data.errors.map(err => err.msg).join('. ')
+          : data.message || 'Invalid credentials';
+        return { success: false, message: errorMsg };
       }
     } catch (error) {
       console.error('Login failed:', error);

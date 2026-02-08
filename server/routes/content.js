@@ -29,6 +29,33 @@ const writeData = (data) => {
   }
 };
 
+// Helper to prepend WEBSITE_URL to image paths
+const prependBaseUrl = (obj) => {
+  if (!obj) return obj;
+  const baseUrl = process.env.WEBSITE_URL || '';
+  
+  if (typeof obj === 'string') {
+    if (obj.startsWith('/uploads/')) {
+      return `${baseUrl}${obj}`;
+    }
+    return obj;
+  }
+  
+  if (Array.isArray(obj)) {
+    return obj.map(item => prependBaseUrl(item));
+  }
+  
+  if (typeof obj === 'object') {
+    const newObj = {};
+    for (const key in obj) {
+      newObj[key] = prependBaseUrl(obj[key]);
+    }
+    return newObj;
+  }
+  
+  return obj;
+};
+
 router.get('/', apiLimiter, (req, res) => {
   try {
     const data = readData();
@@ -44,9 +71,12 @@ router.get('/', apiLimiter, (req, res) => {
       contactInfo: data.content?.contactInfo || {}
     };
     
+    // Prepend base URL to all image paths
+    const formattedContent = prependBaseUrl(publicContent);
+    
     res.json({ 
       success: true, 
-      content: publicContent 
+      content: formattedContent 
     });
   } catch (error) {
     console.error('Error reading content:', error);

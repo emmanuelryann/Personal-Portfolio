@@ -4,12 +4,11 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import { verifyToken } from '../middleware/auth.js';
-import { uploadLimiter } from '../middleware/rateLimiter.js';
+import { apiLimiter, uploadLimiter } from '../middleware/rateLimiter.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const uploadDir = path.join(__dirname, '../uploads');
 
-// Ensure upload directory exists
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
@@ -32,10 +31,8 @@ const storage = multer.diskStorage({
     cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
-    // Sanitize filename and add timestamp
     const ext = path.extname(file.originalname).toLowerCase();
     const nameWithoutExt = path.basename(file.originalname, ext);
-    // Remove all non-alphanumeric characters except hyphens and underscores
     const safeName = nameWithoutExt.replace(/[^a-zA-Z0-9_-]/g, '-');
     const uniqueName = `${safeName}-${Date.now()}${ext}`;
     cb(null, uniqueName);
@@ -74,8 +71,8 @@ const pdfFilter = (req, file, cb) => {
 const uploadImage = multer({ 
   storage,
   limits: { 
-    fileSize: 5 * 1024 * 1024, // 5MB limit for images
-    files: 1 // Only one file at a time
+    fileSize: 5 * 1024 * 1024,
+    files: 1
   },
   fileFilter: imageFilter
 });
@@ -84,7 +81,7 @@ const uploadImage = multer({
 const uploadPDF = multer({ 
   storage,
   limits: { 
-    fileSize: 10 * 1024 * 1024, // 10MB limit for PDFs
+    fileSize: 10 * 1024 * 1024,
     files: 1
   },
   fileFilter: pdfFilter
@@ -92,10 +89,10 @@ const uploadPDF = multer({
 
 const router = Router();
 
-// Upload image endpoint - PROTECTED (Admin only)
+// Upload image endpoint
 router.post('/image', 
-  verifyToken, // Must be authenticated
-  uploadLimiter, // Rate limit uploads
+  verifyToken,
+  uploadLimiter,
   uploadImage.single('image'), 
   (req, res) => {
     try {
@@ -106,7 +103,6 @@ router.post('/image',
         });
       }
       
-      // Return the URL path
       const fileUrl = `/uploads/${req.file.filename}`;
       
       res.json({ 
@@ -127,10 +123,10 @@ router.post('/image',
   }
 );
 
-// Upload CV/PDF endpoint - PROTECTED (Admin only)
+// Upload CV/PDF endpoint
 router.post('/cv', 
-  verifyToken, // Must be authenticated
-  uploadLimiter, // Rate limit uploads
+  verifyToken,
+  uploadLimiter,
   uploadPDF.single('cv'), 
   (req, res) => {
     try {
@@ -141,7 +137,6 @@ router.post('/cv',
         });
       }
       
-      // Delete old CV files (keep only the latest)
       const files = fs.readdirSync(uploadDir);
       files.forEach(file => {
         if (file.toLowerCase().endsWith('.pdf') && file !== req.file.filename) {
@@ -171,16 +166,14 @@ router.post('/cv',
   }
 );
 
-// Delete file endpoint - PROTECTED (Admin only)
-router.delete('/:filename', verifyToken, (req, res) => {
+// Delete file endpoint
+router.delete('/:filename', verifyToken, apiLimiter, (req, res) => {
   try {
     const { filename } = req.params;
     
-    // Sanitize filename to prevent directory traversal
     const safeName = path.basename(filename);
     const filePath = path.join(uploadDir, safeName);
     
-    // Ensure file is within upload directory
     if (!filePath.startsWith(uploadDir)) {
       return res.status(400).json({ 
         success: false, 

@@ -1,9 +1,6 @@
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import cors from 'cors';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 const corsHeaders = cors({
   origin: process.env.NODE_ENV === 'production' 
@@ -19,7 +16,6 @@ const securityHeaders = helmet({
       defaultSrc: ["'self'"],
       styleSrc: [
         "'self'",
-        "'unsafe-inline'",
         "https://fonts.googleapis.com",
         "https://fonts.cdnfonts.com",
       ],
@@ -43,7 +39,7 @@ const securityHeaders = helmet({
         "'self'",
         process.env.NODE_ENV === 'development' 
           ? "http://localhost:*" 
-          : process.env.FRONTEND_URL
+          : process.env.WEBSITE_URL
       ],
       frameSrc: ["'none'"],
       objectSrc: ["'none'"],
@@ -61,64 +57,6 @@ const securityHeaders = helmet({
   frameguard: { action: 'deny' },
   xssFilter: true,
 });
-
-const generalRateLimit = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  message: {
-    success: false,
-    message: 'Too many requests from this IP, please try again later',
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-const authRateLimit = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 5,
-  message: {
-    success: false,
-    message: 'Too many authentication attempts, please try again in 15 minutes',
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
-  skipSuccessfulRequests: true,
-});
-
-const contactRateLimit = rateLimit({
-  windowMs: 60 * 60 * 1000,
-  max: 5,
-  message: {
-    success: false,
-    message: 'Too many contact form submissions. Please try again later.',
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-const uploadRateLimit = rateLimit({
-  windowMs: 60 * 60 * 1000,
-  max: 10,
-  message: {
-    success: false,
-    message: 'Too many upload attempts. Please try again later.',
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-const contentUpdateRateLimit = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 50,
-  message: {
-    success: false,
-    message: 'Too many content updates. Please slow down.',
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-const generateToken = () => '';
 
 const checkEnvVars = () => {
   const requiredEnvVars = [
@@ -167,29 +105,17 @@ const gracefulShutdown = (server) => {
 };
 
 const requestLogger = (req, res, next) => {
-  const start = Date.now();
-  
   res.on('finish', () => {
-    const duration = Date.now() - start;
-    const logData = {
-      timestamp: new Date().toISOString(),
-      method: req.method,
-      path: req.path,
-      status: res.statusCode,
-      ip: req.ip,
-      userAgent: req.get('user-agent'),
-      duration: `${duration}ms`,
-    };
-
-    if (res.statusCode === 401 || res.statusCode === 403) {
-      console.warn('⚠️  Unauthorized access attempt:', logData);
-    } else if (res.statusCode === 429) {
-      console.warn('⚠️  Rate limit exceeded:', logData);
-    } else if (process.env.NODE_ENV === 'development') {
-      console.log('📝', logData);
+    if (res.statusCode === 401 || res.statusCode === 403 || res.statusCode === 429) {
+      console.warn('⚠️ Security event:', {
+        timestamp: new Date().toISOString(),
+        method: req.method,
+        path: req.path,
+        status: res.statusCode,
+        ip: req.ip,
+      });
     }
   });
-
   next();
 };
 
@@ -197,8 +123,8 @@ const requestLogger = (req, res, next) => {
 const secureStaticFiles = (res, filePath) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('Cache-Control', 'public, max-age=86400');
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
   
-  // Add Content-Security-Policy for specific file types
   if (filePath.endsWith('.pdf')) {
     res.setHeader('Content-Security-Policy', "default-src 'none'; style-src 'unsafe-inline'");
   }
@@ -207,12 +133,6 @@ const secureStaticFiles = (res, filePath) => {
 export {
   corsHeaders,
   securityHeaders,
-  generalRateLimit,
-  authRateLimit,
-  contactRateLimit,
-  uploadRateLimit,
-  contentUpdateRateLimit,
-  generateToken,
   checkEnvVars,
   gracefulShutdown,
   requestLogger,

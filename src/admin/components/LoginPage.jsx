@@ -26,28 +26,11 @@ const LoginPage = () => {
   };
 
   return (
-    <div style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      minHeight: '100vh',
-      width: '100vw',
-      backgroundColor: '#f8f9fa',
-      position: 'fixed',
-      top: 0,
-      left: 0
-    }}>
-      <div className="admin-form" style={{
-        backgroundColor: 'white',
-        padding: '2rem',
-        borderRadius: '8px',
-        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-        width: '100%',
-        maxWidth: '400px'
-      }}>
-        <h2 style={{ textAlign: 'center', marginBottom: '1.5rem', color: '#333' }}>Admin Login</h2>
+    <div className="admin-login-wrapper">
+      <div className="admin-form admin-login-card">
+        <h2 className="admin-login-title">Admin Login</h2>
         <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '1rem' }}>
+          <div className="admin-login-form-group">
             <input
               type="password"
               value={password}
@@ -56,21 +39,11 @@ const LoginPage = () => {
               required
             />
           </div>
-          {error && <p style={{ color: 'red', marginBottom: '1rem', textAlign: 'center' }}>{error}</p>}
+          {error && <p className="admin-login-error">{error}</p>}
           <button
             type="submit"
             disabled={loading}
-            style={{
-              width: '100%',
-              padding: '0.75rem',
-              backgroundColor: '#96bb7c',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              fontSize: '1rem',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              opacity: loading ? 0.7 : 1
-            }}
+            className={`admin-login-btn ${loading ? 'loading' : ''}`}
           >
             {loading ? 'Logging in...' : 'Login'}
           </button>

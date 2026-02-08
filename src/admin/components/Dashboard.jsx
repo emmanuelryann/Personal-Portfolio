@@ -119,7 +119,7 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <div className="admin-content">
-        <h2 style={{ marginBottom: '2rem', borderBottom: '2px solid #ddd', paddingBottom: '0.5rem' }}>{tabs.find(t => t.id === activeTab)?.label} Manager</h2>
+        <h2 className='admin-section-title'>{tabs.find(t => t.id === activeTab)?.label} Manager</h2>
         {renderContent()}
       </div>
 
