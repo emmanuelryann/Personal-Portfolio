@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import serverless from 'serverless-http';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -8,13 +9,13 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 
 import express from 'express';
 import cookieParser from 'cookie-parser';
-import contactRouter from './routes/contact.js';
-import contentRouter from './routes/content.js';
-import authRouter from './routes/auth.js';
-import uploadRouter from './routes/upload.js';
-import downloadRouter from './routes/download.js';
-import { verifyTransporter } from './config/email.js';
-import { corsHeaders, securityHeaders, checkEnvVars, gracefulShutdown, requestLogger, secureStaticFiles } from './middleware/security.js';
+import contactRouter from '../../server/routes/contact.js';
+import contentRouter from '../../server/routes/content.js';
+import authRouter from '../../server/routes/auth.js';
+import uploadRouter from '../../server/routes/upload.js';
+import downloadRouter from '../../server/routes/download.js';
+import { verifyTransporter } from '../../server/config/email.js';
+import { corsHeaders, securityHeaders, checkEnvVars, gracefulShutdown, requestLogger, secureStaticFiles } from '../../server/middleware/security.js';
 
 checkEnvVars();
 
@@ -87,19 +88,36 @@ app.use((err, req, res, next) => {
   });
 });
 
-const startServer = async () => {
-  try {
-    await verifyTransporter();
+// const startServer = async () => {
+//   try {
+//     await verifyTransporter();
     
-    const server = app.listen(PORT, () => {
-      console.log(`🌐 Server running on: http://localhost:${PORT}`);
-    });
+//     const server = app.listen(PORT, () => {
+//       console.log(`🌐 Server running on: http://localhost:${PORT}`);
+//     });
   
-    gracefulShutdown(server);
+//     gracefulShutdown(server);
     
+//   } catch (error) {
+//     console.error('❌ Failed to start server:', error);
+//     process.exit(1);
+//   }
+// };
+
+const handler = serverless(app);
+
+module.exports.handler = async (event, context) => {
+  try {
+    await verifyTransporter(); 
+
+    const result = await handler(event, context);
+    return result;
   } catch (error) {
-    console.error('❌ Failed to start server:', error);
-    process.exit(1);
+    console.error('❌ Serverless Error:', error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Internal Server Error' }),
+    };
   }
 };
 
