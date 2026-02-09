@@ -199,9 +199,11 @@ function Portfolio() {
         
         if (data.success) {
           setContent(data.content);
+        } else {
+          console.error('Failed to load content:', data.message, data.debug);
         }
       } catch (err) {
-        console.error('Failed to load content', err);
+        console.error('Failed to load content (Catch):', err);
       }
     };
 

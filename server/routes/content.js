@@ -7,24 +7,27 @@ import { contentUpdateValidation, validate } from '../middleware/validation.js';
 import { apiLimiter } from '../middleware/rateLimiter.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-// Use process.cwd() to reliably find files in Netlify Functions
-const resolveDataPath = () => {
-  if (process.env.NETLIFY || process.env.AWS_LAMBDA_FUNCTION_VERSION) {
-    return path.resolve(process.cwd(), 'server/data.json');
-  }
-  return path.join(__dirname, '../data.json');
-};
-
-const dataPath = resolveDataPath();
+const dataPath = path.join(__dirname, '../data.json');
 
 const router = Router();
 
 const readData = () => {
   try {
+    if (!fs.existsSync(dataPath)) {
+      throw new Error(`File not found at ${dataPath}`);
+    }
     return JSON.parse(fs.readFileSync(dataPath, 'utf8'));
   } catch (error) {
     console.error('Error reading data:', error);
-    throw new Error('Database read error');
+    // Re-throw with path info for debugging
+    const debugError = new Error('Database read error');
+    debugError.debugInfo = {
+      attemptedPath: dataPath,
+      cwd: process.cwd(),
+      dirname: __dirname,
+      originalError: error.message
+    };
+    throw debugError;
   }
 };
 
@@ -93,7 +96,8 @@ router.get('/', apiLimiter, (req, res) => {
     console.error('Error reading content:', error);
     res.status(500).json({ 
       success: false, 
-      message: 'Failed to load content' 
+      message: 'Failed to load content',
+      debug: error.debugInfo // expose debug info to frontend
     });
   }
 });
