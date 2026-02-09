@@ -394,7 +394,16 @@ function Portfolio() {
             {content.skills.map((skill, index) => (
               <div key={index} className="skill-card">
                 <div className="skill-icon">
-                  {skill.image && <img src={skill.image} alt={skill.name} />}
+                  {skill.image && (
+                    <img 
+                      src={skill.image} 
+                      alt={skill.name} 
+                      onError={(e) => {
+                        console.error(`Failed to load skill image: ${skill.image}`);
+                        e.target.style.display = 'none'; 
+                      }}
+                    />
+                  )}
                 </div>
                 <span className="skill-name">{skill.name}</span>
               </div>
@@ -410,7 +419,16 @@ function Portfolio() {
           <div className="portfolio-grid">
             {content.portfolio.map(item => (
               <div key={item.id} className="portfolio-item">
-                {item.image && <img src={item.image} alt={item.title} />}
+                {item.image && (
+                  <img 
+                    src={item.image} 
+                    alt={item.title} 
+                    onError={(e) => {
+                      console.error(`Failed to load portfolio image: ${item.image}`);
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                )}
                 <div className="portfolio-overlay">
                   <h4 className="portfolio-hover-title">{item.title}</h4>
                 </div>

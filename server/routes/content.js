@@ -32,10 +32,13 @@ const writeData = (data) => {
 // Helper to prepend WEBSITE_URL to image paths
 const prependBaseUrl = (obj) => {
   if (!obj) return obj;
-  const baseUrl = process.env.WEBSITE_URL || '';
+  
+  const isProd = process.env.NODE_ENV === 'production';
+  const baseUrl = isProd ? '' : (process.env.WEBSITE_URL || '');
   
   if (typeof obj === 'string') {
     if (obj.startsWith('/uploads/')) {
+      if (obj.startsWith('http')) return obj;
       return `${baseUrl}${obj}`;
     }
     return obj;
