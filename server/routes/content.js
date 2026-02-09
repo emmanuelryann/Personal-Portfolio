@@ -7,7 +7,6 @@ import { contentUpdateValidation, validate } from '../middleware/validation.js';
 import { apiLimiter } from '../middleware/rateLimiter.js';
 
 // Robust path resolution for Netlify/Lambda + Local
-// Robust path resolution for Netlify/Lambda + Local
 const currentDir = path.dirname(fileURLToPath(import.meta.url));
 
 const resolveDataPath = () => {
