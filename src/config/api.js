@@ -4,7 +4,7 @@ const getBaseURL = () => {
   if (import.meta.env.PROD) {
     // Determine base URL dynamically or hardcode to function path
     // Using relative path to function ensures it works on same domain
-    return '/.netlify/functions/api';
+    return '/.netlify/functions';
   }
   return 'http://localhost:5001';
 };

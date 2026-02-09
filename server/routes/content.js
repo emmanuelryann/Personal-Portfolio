@@ -7,15 +7,18 @@ import { contentUpdateValidation, validate } from '../middleware/validation.js';
 import { apiLimiter } from '../middleware/rateLimiter.js';
 
 // Robust path resolution for Netlify/Lambda + Local
+// Robust path resolution for Netlify/Lambda + Local
+const currentDir = path.dirname(fileURLToPath(import.meta.url));
+
 const resolveDataPath = () => {
   const candidates = [
     // 1. Production/Netlify: often in task root or server folder
     path.resolve(process.cwd(), 'server/data.json'),
     path.resolve(process.cwd(), 'data.json'),
     // 2. Local/Development: relative to this file
-    path.join(__dirname, '../data.json'),
+    path.join(currentDir, '../data.json'),
     // 3. Fallback for flattened bundles
-    path.join(__dirname, 'data.json')
+    path.join(currentDir, 'data.json')
   ];
 
   for (const candidate of candidates) {
@@ -25,8 +28,8 @@ const resolveDataPath = () => {
     }
   }
   
-  // If we can't find it, return the most likely local path so the error message makes sense
-  return path.join(__dirname, '../data.json');
+  // If we can't find it, return the most likely local path
+  return path.join(currentDir, '../data.json');
 };
 
 const dataPath = resolveDataPath();
@@ -46,7 +49,7 @@ const readData = () => {
     debugError.debugInfo = {
       attemptedPath: dataPath,
       cwd: process.cwd(),
-      dirname: __dirname,
+      dirname: currentDir,
       originalError: error.message
     };
     throw debugError;
