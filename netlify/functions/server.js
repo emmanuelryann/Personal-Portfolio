@@ -121,4 +121,4 @@ module.exports.handler = async (event, context) => {
   }
 };
 
-startServer();
+// startServer();
