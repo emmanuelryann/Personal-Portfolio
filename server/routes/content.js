@@ -6,15 +6,37 @@ import { verifyToken } from '../middleware/auth.js';
 import { contentUpdateValidation, validate } from '../middleware/validation.js';
 import { apiLimiter } from '../middleware/rateLimiter.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dataPath = path.join(__dirname, '../data.json');
+// Robust path resolution for Netlify/Lambda + Local
+const resolveDataPath = () => {
+  const candidates = [
+    // 1. Production/Netlify: often in task root or server folder
+    path.resolve(process.cwd(), 'server/data.json'),
+    path.resolve(process.cwd(), 'data.json'),
+    // 2. Local/Development: relative to this file
+    path.join(__dirname, '../data.json'),
+    // 3. Fallback for flattened bundles
+    path.join(__dirname, 'data.json')
+  ];
+
+  for (const candidate of candidates) {
+    if (fs.existsSync(candidate)) {
+      console.log(`✅ Found data.json at: ${candidate}`);
+      return candidate;
+    }
+  }
+  
+  // If we can't find it, return the most likely local path so the error message makes sense
+  return path.join(__dirname, '../data.json');
+};
+
+const dataPath = resolveDataPath();
 
 const router = Router();
 
 const readData = () => {
   try {
     if (!fs.existsSync(dataPath)) {
-      throw new Error(`File not found at ${dataPath}`);
+      throw new Error(`File not found. Searched in: ${dataPath} (and others)`);
     }
     return JSON.parse(fs.readFileSync(dataPath, 'utf8'));
   } catch (error) {

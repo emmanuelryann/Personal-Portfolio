@@ -195,26 +195,24 @@ function Portfolio() {
     const fetchContent = async () => {
       try {
         const response = await fetch(API_ENDPOINTS.content);
-        const contentType = response.headers.get("content-type");
+        const text = await response.text();
         
-        if (contentType && contentType.indexOf("application/json") !== -1) {
-          const data = await response.json();
+        console.log('DEBUG: Response status:', response.status);
+        console.log('DEBUG: Content-Type:', response.headers.get("content-type"));
+        console.log('DEBUG: Body preview:', text.substring(0, 500));
+
+        try {
+          const data = JSON.parse(text);
           if (data.success) {
             setContent(data.content);
           } else {
              console.error('Failed to load content:', data.message, data.debug);
           }
-        } else {
-          // If response is not JSON (e.g. HTML error page or 404/500), log the text
-          const text = await response.text();
-          console.error('SERVER ERROR (Non-JSON response):', {
-            status: response.status,
-            statusText: response.statusText,
-            bodyPreview: text.substring(0, 500) // Log first 500 chars to see error message
-          });
+        } catch (e) {
+          console.error('SERVER ERROR: JSON Parse Failed. Server returned:', text.substring(0, 1000));
         }
       } catch (err) {
-        console.error('Failed to load content (Catch):', err);
+        console.error('Failed to load content (Network/Fetch Error):', err);
       }
     };
 
