@@ -7,7 +7,15 @@ import { contentUpdateValidation, validate } from '../middleware/validation.js';
 import { apiLimiter } from '../middleware/rateLimiter.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dataPath = path.join(__dirname, '../data.json');
+// Use process.cwd() to reliably find files in Netlify Functions
+const resolveDataPath = () => {
+  if (process.env.NETLIFY || process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+    return path.resolve(process.cwd(), 'server/data.json');
+  }
+  return path.join(__dirname, '../data.json');
+};
+
+const dataPath = resolveDataPath();
 
 const router = Router();
 
