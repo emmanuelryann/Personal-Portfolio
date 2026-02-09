@@ -132,7 +132,7 @@ const handler = serverless(app);
 
 module.exports.handler = async (event, context) => {
   try {
-    await verifyTransporter(); 
+// await verifyTransporter(); // Removed to prevent blocking requests 
 
     const result = await handler(event, context);
     return result;

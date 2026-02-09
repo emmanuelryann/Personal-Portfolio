@@ -59,22 +59,42 @@ const securityHeaders = helmet({
 });
 
 const checkEnvVars = () => {
+  const isServerless = process.env.NETLIFY || process.env.AWS_LAMBDA_FUNCTION_VERSION;
+  
   const requiredEnvVars = [
     'JWT_SECRET',
     'NODEMAILER_USER',
     'NODEMAILER_PASS',
-    'WEBSITE_URL',
-    'PORT'
+    'WEBSITE_URL'
   ];
 
+  // Only require PORT if running as a persistent server (not serverless)
+  if (!isServerless) {
+    requiredEnvVars.push('PORT');
+  }
+
+  const missing = [];
   for (const envVar of requiredEnvVars) {
     if (!process.env[envVar]) {
-      console.error(`❌ FATAL: Missing required environment variable: ${envVar}`);
-      process.exit(1);
+      missing.push(envVar);
     }
   }
 
-  console.log('✅ All required environment variables are set');
+  if (missing.length > 0) {
+    const errorMsg = `❌ Missing required environment variables: ${missing.join(', ')}`;
+    console.error(errorMsg);
+    
+    // In serverless, we log but don't crash, as some features might be optional
+    // or the environment might be partially configured.
+    if (!isServerless) {
+      console.error('FATAL: Exiting due to missing configuration.');
+      process.exit(1);
+    } else {
+      console.warn('⚠️  Running in Serverless mode: Proceeding despite missing configuration. Some features may not work.');
+    }
+  } else {
+    console.log('✅ All required environment variables are set');
+  }
 };
 
 const gracefulShutdown = (server) => {
