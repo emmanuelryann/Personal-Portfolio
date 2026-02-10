@@ -40,13 +40,13 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
   setHeaders: secureStaticFiles,
 }));
 
-app.use('/api/contact', contactRouter);
-app.use('/api/content', contentRouter);
-app.use('/api/auth', authRouter);
-app.use('/api/upload', uploadRouter);
-app.use('/api/download-cv', downloadRouter);
+app.use('/contact', contactRouter);
+app.use('/content', contentRouter);
+app.use('/auth', authRouter);
+app.use('/upload', uploadRouter);
+app.use('/download-cv', downloadRouter);
 
-app.get('/api/health', (req, res) => {
+app.get('/health', (req, res) => {
   res.json({ 
     success: true,
     status: 'ok', 
@@ -60,12 +60,13 @@ app.use((req, res) => {
   console.warn('⚠️  404 Not Found:', {
     method: req.method,
     path: req.path,
+    url: req.url,
     ip: req.ip,
   });
   
   res.status(404).json({
     success: false,
-    message: 'Endpoint not found',
+    message: `Endpoint not found: ${req.path}`,
   });
 });
 
@@ -106,7 +107,7 @@ app.use((err, req, res, next) => {
 
 const handler = serverless(app);
 
-module.exports.handler = async (event, context) => {
+export const handlerName = async (event, context) => {
   try {
     await verifyTransporter(); 
 
@@ -116,9 +117,10 @@ module.exports.handler = async (event, context) => {
     console.error('❌ Serverless Error:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Internal Server Error' }),
+      body: JSON.stringify({ error: 'Internal Server Error', details: error.message }),
     };
   }
 };
 
-// startServer();
+export { handlerName as handler };
+// startServer removed for serverless deployment
