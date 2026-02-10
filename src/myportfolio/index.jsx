@@ -195,21 +195,6 @@ function Portfolio() {
     const fetchContent = async () => {
       try {
         const response = await fetch(API_ENDPOINTS.content);
-        
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error(`❌ API Error (${response.status}):`, errorText.substring(0, 500));
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-           const body = await response.text();
-           console.error("❌ Expected JSON but got:", contentType);
-           console.error("❌ Response body snippet:", body.substring(0, 500));
-           throw new TypeError("Oops, we haven't got JSON!");
-        }
-
         const data = await response.json();
         
         if (data.success) {

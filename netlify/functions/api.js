@@ -5,17 +5,17 @@ import serverless from 'serverless-http';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-dotenv.config({ path: path.join(__dirname, '.env') });
+dotenv.config({ path: path.join(__dirname, '../../server/.env') });
 
 import express from 'express';
 import cookieParser from 'cookie-parser';
-import contactRouter from '../../server/routes/contact.js';
-import contentRouter from '../../server/routes/content.js';
-import authRouter from '../../server/routes/auth.js';
-import uploadRouter from '../../server/routes/upload.js';
-import downloadRouter from '../../server/routes/download.js';
-import { verifyTransporter } from '../../server/config/email.js';
-import { corsHeaders, securityHeaders, checkEnvVars, gracefulShutdown, requestLogger, secureStaticFiles } from '../../server/middleware/security.js';
+import contactRouter from '../../../server/routes/contact.js';
+import contentRouter from '../../../server/routes/content.js';
+import authRouter from '../../../server/routes/auth.js';
+import uploadRouter from '../../../server/routes/upload.js';
+import downloadRouter from '../../../server/routes/download.js';
+import { verifyTransporter } from '../../../server/config/email.js';
+import { corsHeaders, securityHeaders, checkEnvVars, gracefulShutdown, requestLogger, secureStaticFiles } from '../../../server/middleware/security.js';
 
 checkEnvVars();
 
@@ -34,69 +34,39 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 app.use(cookieParser());
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
-  maxAge: '1d',
-  etag: true,
-  setHeaders: secureStaticFiles,
-}));
+// app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
+//   maxAge: '1d',
+//   etag: true,
+//   setHeaders: secureStaticFiles,
+// }));
 
-// Mount routes WITHOUT /api prefix because Netlify redirect already handles it
 app.use('/contact', contactRouter);
 app.use('/content', contentRouter);
 app.use('/auth', authRouter);
 app.use('/upload', uploadRouter);
 app.use('/download-cv', downloadRouter);
 
-// Root health check for the function
-app.get('/', (req, res) => {
-  res.json({
-    success: true,
-    message: 'API Function is live',
-    timestamp: new Date().toISOString()
-  });
-});
-
 app.get('/health', (req, res) => {
   res.json({ 
     success: true,
     status: 'ok', 
-    message: 'Server is running',
+    message: 'Serverless function running',
     environment: NODE_ENV,
     timestamp: new Date().toISOString(),
   });
 });
 
-app.use((req, res, next) => {
-  if (NODE_ENV === 'production') {
-    console.log(`📡 Incoming Request: ${req.method} ${req.path} | Original: ${req.originalUrl}`);
-  }
-  next();
-});
-
-app.get('/debug', (req, res) => {
-  res.json({
-    success: true,
-    path: req.path,
-    url: req.url,
-    originalUrl: req.originalUrl,
-    env: NODE_ENV,
-    cwd: process.cwd(),
-    dirname: __dirname,
-    dataPathExists: fs.existsSync(dataPath)
-  });
-});
 
 app.use((req, res) => {
   console.warn('⚠️  404 Not Found:', {
     method: req.method,
     path: req.path,
-    url: req.url,
     ip: req.ip,
   });
   
   res.status(404).json({
     success: false,
-    message: `Endpoint not found: ${req.path}`,
+    message: 'Endpoint not found',
   });
 });
 
@@ -135,24 +105,23 @@ app.use((err, req, res, next) => {
 //   }
 // };
 
-const serverlessHandler = serverless(app);
+// const handler = serverless(app);
 
-export const handlerName = async (event, context) => {
+export const handler = async (event, context) => {
   try {
-    // Non-blocking transporter verification (don't await it here)
-    verifyTransporter().catch(err => console.error('Delayed Transporter Error:', err));
-
-    const result = await serverlessHandler(event, context);
-    return result;
+    await verifyTransporter(); 
+    const serverlessHandler = serverless(app);
+    return await serverlessHandler(event, context);
   } catch (error) {
     console.error('❌ Serverless Error:', error);
     return {
       statusCode: 500,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ error: 'Internal Server Error', details: error.message }),
+      body: JSON.stringify({ 
+        success: false,
+        error: 'Internal Server Error' 
+      }),
     };
   }
 };
 
-export { handlerName as handler };
-// startServer removed for serverless deployment
+// startServer();

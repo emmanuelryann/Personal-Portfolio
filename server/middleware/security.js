@@ -69,15 +69,8 @@ const checkEnvVars = () => {
 
   for (const envVar of requiredEnvVars) {
     if (!process.env[envVar]) {
-      if (envVar === 'PORT' && process.env.NETLIFY) {
-        // Skip PORT check on Netlify
-        continue;
-      }
       console.error(`❌ FATAL: Missing required environment variable: ${envVar}`);
-      // Only exit if not on Netlify, to avoid 502s
-      if (!process.env.NETLIFY) {
-        process.exit(1);
-      }
+      process.exit(1);
     }
   }
 
