@@ -7,7 +7,33 @@ import { contentUpdateValidation, validate } from '../middleware/validation.js';
 import { apiLimiter } from '../middleware/rateLimiter.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dataPath = path.join(__dirname, '../data.json');
+
+const getDataPath = () => {
+  // In Netlify functions, files from 'included_files' are usually at the root or preserved structure
+  const possiblePaths = [
+    // 1. Standard development path (relative to this file)
+    path.join(__dirname, '../data.json'),
+    // 2. Netlify function execution root (files often at root or preserved folder)
+    path.join(process.cwd(), 'server/data.json'),
+    path.join(process.cwd(), 'data.json'),
+    // 3. Fallback for bundled output
+    path.resolve('server/data.json')
+  ];
+
+  for (const p of possiblePaths) {
+    if (fs.existsSync(p)) {
+      return p;
+    }
+  }
+
+  // If no file found, return default dev path but log warning
+  console.warn('⚠️ data.json not found in expected locations, using default:', possiblePaths[0]);
+  console.warn('Current directory:', process.cwd());
+  console.warn('__dirname:', __dirname);
+  return possiblePaths[0];
+};
+
+const dataPath = getDataPath();
 
 const router = Router();
 
