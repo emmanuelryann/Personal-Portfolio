@@ -56,6 +56,26 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+app.use((req, res, next) => {
+  if (NODE_ENV === 'production') {
+    console.log(`📡 Incoming Request: ${req.method} ${req.path} | Original: ${req.originalUrl}`);
+  }
+  next();
+});
+
+app.get('/api/debug', (req, res) => {
+  res.json({
+    success: true,
+    path: req.path,
+    url: req.url,
+    originalUrl: req.originalUrl,
+    env: NODE_ENV,
+    cwd: process.cwd(),
+    dirname: __dirname,
+    dataPathExists: fs.existsSync(dataPath)
+  });
+});
+
 app.use((req, res) => {
   console.warn('⚠️  404 Not Found:', {
     method: req.method,
