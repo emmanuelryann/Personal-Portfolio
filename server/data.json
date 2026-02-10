@@ -65,12 +65,12 @@
     "portfolio": [
       {
         "id": 1,
-        "image": "/uploads/Boho-Restaurant-Preview-1770473045101.gif",
+        "image": "http://localhost:5001/uploads/Boho-Restaurant-Preview-1770473045101.gif",
         "title": "Boho UI Clone (Full-Stack Implementation)"
       },
       {
         "id": 2,
-        "image": "/uploads/Farfetch-1770473052884.gif",
+        "image": "http://localhost:5001/uploads/Farfetch-1770473052884.gif",
         "title": "Farfetch UI clone (Full-Stack Implementation)"
       },
       {
@@ -81,7 +81,7 @@
       {
         "id": 1770429534613,
         "title": "Oral Health Dental",
-        "image": "/uploads/Oral-health-dental-preview-1770473059755.gif"
+        "image": "http://localhost:5001/uploads/Oral-health-dental-preview-1770473059755.gif"
       },
       {
         "id": 1770434459418,

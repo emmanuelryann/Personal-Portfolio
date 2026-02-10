@@ -195,24 +195,13 @@ function Portfolio() {
     const fetchContent = async () => {
       try {
         const response = await fetch(API_ENDPOINTS.content);
-        const text = await response.text();
+        const data = await response.json();
         
-        console.log('DEBUG: Response status:', response.status);
-        console.log('DEBUG: Content-Type:', response.headers.get("content-type"));
-        console.log('DEBUG: Body preview:', text.substring(0, 500));
-
-        try {
-          const data = JSON.parse(text);
-          if (data.success) {
-            setContent(data.content);
-          } else {
-             console.error('Failed to load content:', data.message, data.debug);
-          }
-        } catch (e) {
-          console.error('SERVER ERROR: JSON Parse Failed. Server returned:', text.substring(0, 1000));
+        if (data.success) {
+          setContent(data.content);
         }
       } catch (err) {
-        console.error('Failed to load content (Network/Fetch Error):', err);
+        console.error('Failed to load content', err);
       }
     };
 
@@ -405,16 +394,7 @@ function Portfolio() {
             {content.skills.map((skill, index) => (
               <div key={index} className="skill-card">
                 <div className="skill-icon">
-                  {skill.image && (
-                    <img 
-                      src={skill.image} 
-                      alt={skill.name} 
-                      onError={(e) => {
-                        console.error(`Failed to load skill image: ${skill.image}`);
-                        e.target.style.display = 'none'; 
-                      }}
-                    />
-                  )}
+                  {skill.image && <img src={skill.image} alt={skill.name} />}
                 </div>
                 <span className="skill-name">{skill.name}</span>
               </div>
@@ -430,16 +410,7 @@ function Portfolio() {
           <div className="portfolio-grid">
             {content.portfolio.map(item => (
               <div key={item.id} className="portfolio-item">
-                {item.image && (
-                  <img 
-                    src={item.image} 
-                    alt={item.title} 
-                    onError={(e) => {
-                      console.error(`Failed to load portfolio image: ${item.image}`);
-                      e.target.style.display = 'none';
-                    }}
-                  />
-                )}
+                {item.image && <img src={item.image} alt={item.title} />}
                 <div className="portfolio-overlay">
                   <h4 className="portfolio-hover-title">{item.title}</h4>
                 </div>

@@ -46,30 +46,6 @@ app.use('/api/auth', authRouter);
 app.use('/api/upload', uploadRouter);
 app.use('/api/download-cv', downloadRouter);
 
-app.get('/api/diagnose', async (req, res) => {
-  const fs = await import('fs'); // dynamic import to avoid top-level if likely not needed
-  const listFiles = (dir) => {
-    try {
-      return fs.readdirSync(dir);
-    } catch (e) {
-      return [`[Error reading ${dir}: ${e.message}]`];
-    }
-  };
-
-  res.json({
-    cwd: process.cwd(),
-    __dirname,
-    filesInCwd: listFiles(process.cwd()),
-    filesInServer: listFiles(path.join(process.cwd(), 'server')),
-    filesInDirname: listFiles(__dirname),
-    filesInParentDirname: listFiles(path.join(__dirname, '..')),
-    env: {
-      NETLIFY: process.env.NETLIFY,
-      LAMBDA: process.env.AWS_LAMBDA_FUNCTION_VERSION
-    }
-  });
-});
-
 app.get('/api/health', (req, res) => {
   res.json({ 
     success: true,
@@ -132,7 +108,7 @@ const handler = serverless(app);
 
 module.exports.handler = async (event, context) => {
   try {
-// await verifyTransporter(); // Removed to prevent blocking requests 
+    await verifyTransporter(); 
 
     const result = await handler(event, context);
     return result;

@@ -1,5 +1,4 @@
 {
-  "$schema": "./.vscode/package.schema.json",
   "name": "package.json",
   "private": true,
   "version": "0.0.0",

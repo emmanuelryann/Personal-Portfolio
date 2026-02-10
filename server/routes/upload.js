@@ -7,8 +7,7 @@ import { verifyToken } from '../middleware/auth.js';
 import { apiLimiter, uploadLimiter } from '../middleware/rateLimiter.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-// Save to public/uploads so they are accessible by Vite/Frontend
-const uploadDir = path.join(__dirname, '../../public/uploads');
+const uploadDir = path.join(__dirname, '../uploads');
 
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });

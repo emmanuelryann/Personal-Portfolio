@@ -6,52 +6,17 @@ import { verifyToken } from '../middleware/auth.js';
 import { contentUpdateValidation, validate } from '../middleware/validation.js';
 import { apiLimiter } from '../middleware/rateLimiter.js';
 
-// Robust path resolution for Netlify/Lambda + Local
-const currentDir = path.dirname(fileURLToPath(import.meta.url));
-
-const resolveDataPath = () => {
-  const candidates = [
-    // 1. Production/Netlify: often in task root or server folder
-    path.resolve(process.cwd(), 'server/data.json'),
-    path.resolve(process.cwd(), 'data.json'),
-    // 2. Local/Development: relative to this file
-    path.join(currentDir, '../data.json'),
-    // 3. Fallback for flattened bundles
-    path.join(currentDir, 'data.json')
-  ];
-
-  for (const candidate of candidates) {
-    if (fs.existsSync(candidate)) {
-      console.log(`✅ Found data.json at: ${candidate}`);
-      return candidate;
-    }
-  }
-  
-  // If we can't find it, return the most likely local path
-  return path.join(currentDir, '../data.json');
-};
-
-const dataPath = resolveDataPath();
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const dataPath = path.join(__dirname, '../data.json');
 
 const router = Router();
 
 const readData = () => {
   try {
-    if (!fs.existsSync(dataPath)) {
-      throw new Error(`File not found. Searched in: ${dataPath} (and others)`);
-    }
     return JSON.parse(fs.readFileSync(dataPath, 'utf8'));
   } catch (error) {
     console.error('Error reading data:', error);
-    // Re-throw with path info for debugging
-    const debugError = new Error('Database read error');
-    debugError.debugInfo = {
-      attemptedPath: dataPath,
-      cwd: process.cwd(),
-      dirname: currentDir,
-      originalError: error.message
-    };
-    throw debugError;
+    throw new Error('Database read error');
   }
 };
 
@@ -67,13 +32,10 @@ const writeData = (data) => {
 // Helper to prepend WEBSITE_URL to image paths
 const prependBaseUrl = (obj) => {
   if (!obj) return obj;
-  
-  const isProd = process.env.NODE_ENV === 'production';
-  const baseUrl = isProd ? '' : (process.env.WEBSITE_URL || '');
+  const baseUrl = process.env.WEBSITE_URL || '';
   
   if (typeof obj === 'string') {
     if (obj.startsWith('/uploads/')) {
-      if (obj.startsWith('http')) return obj;
       return `${baseUrl}${obj}`;
     }
     return obj;
@@ -120,8 +82,7 @@ router.get('/', apiLimiter, (req, res) => {
     console.error('Error reading content:', error);
     res.status(500).json({ 
       success: false, 
-      message: 'Failed to load content',
-      debug: error.debugInfo // expose debug info to frontend
+      message: 'Failed to load content' 
     });
   }
 });

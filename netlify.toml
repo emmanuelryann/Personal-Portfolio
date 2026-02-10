@@ -8,10 +8,8 @@
 
 [functions]
   directory = "netlify/functions"
-  included_files = ["server/data.json"]
 
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api/:splat"
   status = 200
-  force = true
