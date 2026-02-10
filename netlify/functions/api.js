@@ -40,13 +40,13 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
   setHeaders: secureStaticFiles,
 }));
 
-app.use('/contact', contactRouter);
-app.use('/content', contentRouter);
-app.use('/auth', authRouter);
-app.use('/upload', uploadRouter);
-app.use('/download-cv', downloadRouter);
+app.use('/api/contact', contactRouter);
+app.use('/api/content', contentRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/upload', uploadRouter);
+app.use('/api/download-cv', downloadRouter);
 
-app.get('/health', (req, res) => {
+app.get('/api/health', (req, res) => {
   res.json({ 
     success: true,
     status: 'ok', 
@@ -105,18 +105,19 @@ app.use((err, req, res, next) => {
 //   }
 // };
 
-const handler = serverless(app);
+const serverlessHandler = serverless(app);
 
 export const handlerName = async (event, context) => {
   try {
     await verifyTransporter(); 
 
-    const result = await handler(event, context);
+    const result = await serverlessHandler(event, context);
     return result;
   } catch (error) {
     console.error('❌ Serverless Error:', error);
     return {
       statusCode: 500,
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ error: 'Internal Server Error', details: error.message }),
     };
   }
