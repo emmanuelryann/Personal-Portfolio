@@ -40,13 +40,23 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
   setHeaders: secureStaticFiles,
 }));
 
-app.use('/api/contact', contactRouter);
-app.use('/api/content', contentRouter);
-app.use('/api/auth', authRouter);
-app.use('/api/upload', uploadRouter);
-app.use('/api/download-cv', downloadRouter);
+// Mount routes WITHOUT /api prefix because Netlify redirect already handles it
+app.use('/contact', contactRouter);
+app.use('/content', contentRouter);
+app.use('/auth', authRouter);
+app.use('/upload', uploadRouter);
+app.use('/download-cv', downloadRouter);
 
-app.get('/api/health', (req, res) => {
+// Root health check for the function
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'API Function is live',
+    timestamp: new Date().toISOString()
+  });
+});
+
+app.get('/health', (req, res) => {
   res.json({ 
     success: true,
     status: 'ok', 
@@ -63,7 +73,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get('/api/debug', (req, res) => {
+app.get('/debug', (req, res) => {
   res.json({
     success: true,
     path: req.path,
@@ -129,7 +139,8 @@ const serverlessHandler = serverless(app);
 
 export const handlerName = async (event, context) => {
   try {
-    await verifyTransporter(); 
+    // Non-blocking transporter verification (don't await it here)
+    verifyTransporter().catch(err => console.error('Delayed Transporter Error:', err));
 
     const result = await serverlessHandler(event, context);
     return result;
