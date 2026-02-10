@@ -4,7 +4,15 @@ import cors from 'cors';
 
 const corsHeaders = cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? [process.env.WEBSITE_URL]
+    ? (origin, callback) => {
+        // Allow the specific WEBSITE_URL or any Netlify deploy preview
+        const allowed = [process.env.WEBSITE_URL];
+        if (!origin || allowed.includes(origin) || origin.endsWith('.netlify.app')) {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+      }
     : ['http://localhost:5173'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
@@ -63,8 +71,7 @@ const checkEnvVars = () => {
     'JWT_SECRET',
     'NODEMAILER_USER',
     'NODEMAILER_PASS',
-    'WEBSITE_URL',
-    'PORT'
+    'WEBSITE_URL'
   ];
 
   for (const envVar of requiredEnvVars) {
