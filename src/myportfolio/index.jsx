@@ -195,6 +195,16 @@ function Portfolio() {
     const fetchContent = async () => {
       try {
         const response = await fetch(API_ENDPOINTS.content);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+           throw new TypeError("Oops, we haven't got JSON!");
+        }
+
         const data = await response.json();
         
         if (data.success) {

@@ -4,15 +4,7 @@ import cors from 'cors';
 
 const corsHeaders = cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? (origin, callback) => {
-        // Allow the specific WEBSITE_URL or any Netlify deploy preview
-        const allowed = [process.env.WEBSITE_URL];
-        if (!origin || allowed.includes(origin) || origin.endsWith('.netlify.app')) {
-          callback(null, true);
-        } else {
-          callback(new Error('Not allowed by CORS'));
-        }
-      }
+    ? [process.env.WEBSITE_URL]
     : ['http://localhost:5173'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
@@ -71,13 +63,21 @@ const checkEnvVars = () => {
     'JWT_SECRET',
     'NODEMAILER_USER',
     'NODEMAILER_PASS',
-    'WEBSITE_URL'
+    'WEBSITE_URL',
+    'PORT'
   ];
 
   for (const envVar of requiredEnvVars) {
     if (!process.env[envVar]) {
+      if (envVar === 'PORT' && process.env.NETLIFY) {
+        // Skip PORT check on Netlify
+        continue;
+      }
       console.error(`❌ FATAL: Missing required environment variable: ${envVar}`);
-      process.exit(1);
+      // Only exit if not on Netlify, to avoid 502s
+      if (!process.env.NETLIFY) {
+        process.exit(1);
+      }
     }
   }
 
