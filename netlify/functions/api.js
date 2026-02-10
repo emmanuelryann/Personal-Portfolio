@@ -1,21 +1,26 @@
 import dotenv from 'dotenv';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import serverless from 'serverless-http';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// In ESM, __dirname is not available by default. 
+// However, when Netlify bundles with esbuild, it may attempt to convert to CJS.
+// We'll use a safer approach for both environments.
+const __dirname = path.resolve();
 
-dotenv.config({ path: path.join(__dirname, '../../server/.env') });
+// Only use dotenv in development. In Netlify/Production, variables are set in the UI.
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config({ path: path.join(__dirname, 'server/.env') });
+}
 
 import express from 'express';
 import cookieParser from 'cookie-parser';
-import contactRouter from '../../../server/routes/contact.js';
-import contentRouter from '../../../server/routes/content.js';
-import authRouter from '../../../server/routes/auth.js';
-import uploadRouter from '../../../server/routes/upload.js';
-import downloadRouter from '../../../server/routes/download.js';
-import { verifyTransporter } from '../../../server/config/email.js';
-import { corsHeaders, securityHeaders, checkEnvVars, gracefulShutdown, requestLogger, secureStaticFiles } from '../../../server/middleware/security.js';
+import contactRouter from '../../server/routes/contact.js';
+import contentRouter from '../../server/routes/content.js';
+import authRouter from '../../server/routes/auth.js';
+import uploadRouter from '../../server/routes/upload.js';
+import downloadRouter from '../../server/routes/download.js';
+import { verifyTransporter } from '../../server/config/email.js';
+import { corsHeaders, securityHeaders, checkEnvVars, gracefulShutdown, requestLogger, secureStaticFiles } from '../../server/middleware/security.js';
 
 checkEnvVars();
 

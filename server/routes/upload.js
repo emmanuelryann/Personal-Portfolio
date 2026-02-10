@@ -1,13 +1,11 @@
 import { Router } from 'express';
 import multer from 'multer';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import fs from 'fs';
 import { verifyToken } from '../middleware/auth.js';
 import { apiLimiter, uploadLimiter } from '../middleware/rateLimiter.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const uploadDir = path.join(__dirname, '../uploads');
+const uploadDir = path.join(process.cwd(), 'server', 'uploads');
 
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });

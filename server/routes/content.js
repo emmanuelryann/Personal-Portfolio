@@ -1,13 +1,11 @@
 import { Router } from 'express';
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import { verifyToken } from '../middleware/auth.js';
 import { contentUpdateValidation, validate } from '../middleware/validation.js';
 import { apiLimiter } from '../middleware/rateLimiter.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dataPath = path.join(__dirname, '../data.json');
+const dataPath = path.join(process.cwd(), 'server', 'data.json');
 
 const router = Router();
 

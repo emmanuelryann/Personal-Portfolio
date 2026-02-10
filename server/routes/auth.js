@@ -2,13 +2,11 @@ import bcrypt from 'bcryptjs';
 import { Router } from 'express';
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import { generateToken, verifyToken } from '../middleware/auth.js';
 import { authLimiter } from '../middleware/rateLimiter.js';
 import { loginValidation, passwordChangeValidation, validate } from '../middleware/validation.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dataPath = path.join(__dirname, '../data.json');
+const dataPath = path.join(process.cwd(), 'server', 'data.json');
 
 const router = Router();
 

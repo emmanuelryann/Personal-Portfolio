@@ -11,6 +11,11 @@
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
+  included_files = ["server/data.json"]
+
+[functions."*"]
+  node_bundler = "esbuild"
+  config = { format = "esm" }
 
 [[redirects]]
   from = "/api/*"
