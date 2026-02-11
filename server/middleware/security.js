@@ -4,7 +4,7 @@ import cors from 'cors';
 
 const corsHeaders = cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? [process.env.WEBSITE_URL]
+    ? (process.env.WEBSITE_URL ? [process.env.WEBSITE_URL] : true) // Fallback to true (allow all) if not set in production for initial setup
     : ['http://localhost:5173'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
@@ -39,7 +39,7 @@ const securityHeaders = helmet({
         "'self'",
         process.env.NODE_ENV === 'development' 
           ? "http://localhost:*" 
-          : process.env.WEBSITE_URL
+          : (process.env.WEBSITE_URL || "*")
       ],
       frameSrc: ["'none'"],
       objectSrc: ["'none'"],
@@ -69,6 +69,10 @@ const checkEnvVars = () => {
 
   for (const envVar of requiredEnvVars) {
     if (!process.env[envVar]) {
+      if (envVar === 'WEBSITE_URL' || envVar === 'PORT') {
+        console.warn(`⚠️  WARNING: Optional/Fallback environment variable missing: ${envVar}`);
+        continue;
+      }
       console.error(`❌ FATAL: Missing required environment variable: ${envVar}`);
       process.exit(1);
     }
