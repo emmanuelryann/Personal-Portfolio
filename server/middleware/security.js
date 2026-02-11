@@ -30,6 +30,7 @@ const securityHeaders = helmet({
         "data:",
         "https:",
         "blob:",
+        process.env.WEBSITE_URL || "*" // REQUIRED: Allow production images
       ],
       scriptSrc: [
         "'self'",

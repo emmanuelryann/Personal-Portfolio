@@ -33,6 +33,11 @@ const prependBaseUrl = (obj) => {
   const baseUrl = process.env.WEBSITE_URL || '';
   
   if (typeof obj === 'string') {
+    // Safety: If somehow localhost leaked into data.json, strip it in production
+    if (process.env.NODE_ENV === 'production') {
+      obj = obj.replace(/^http:\/\/localhost:\d+/, '');
+    }
+
     if (obj.startsWith('/uploads/')) {
       return `${baseUrl}${obj}`;
     }
