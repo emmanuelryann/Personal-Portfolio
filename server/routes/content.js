@@ -32,10 +32,6 @@ const prependBaseUrl = (obj) => {
   if (!obj) return obj;
   const baseUrl = process.env.WEBSITE_URL || '';
   
-  if (process.env.NODE_ENV === 'production') {
-    console.log(`🔍 [Diagnostic] prependBaseUrl: NODE_ENV: production | WEBSITE_URL: "${process.env.WEBSITE_URL || 'MISSING'}" | Using baseUrl: "${baseUrl}"`);
-  }
-  
   if (typeof obj === 'string') {
     if (obj.startsWith('/uploads/')) {
       return `${baseUrl}${obj}`;

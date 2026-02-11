@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 
 const __dirname = path.resolve();
 
@@ -28,29 +29,13 @@ app.use(requestLogger);
 app.use(corsHeaders);
 app.use(securityHeaders);
 
-// Diagnostic CSP logging
-app.use((req, res, next) => {
-  res.on('finish', () => {
-    const csp = res.getHeader('Content-Security-Policy');
-    if (csp && process.env.NODE_ENV === 'production') {
-      console.log(`🛡️ [Diagnostic] CSP Header: ${csp.substring(0, 100)}...`);
-    }
-  });
-  next();
-});
-
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 app.use(cookieParser());
 
-// Serve static files from uploads directory with diagnostic logging
-app.use('/uploads', (req, res, next) => {
-  const fullPath = path.join(__dirname, 'server', 'uploads', req.path);
-  const exists = fs.existsSync(fullPath);
-  console.log(`📂 [Diagnostic] Upload Request: ${req.path} | Exists: ${exists} | Full Path: ${fullPath}`);
-  next();
-}, express.static(path.join(__dirname, 'server', 'uploads'), {
+// Serve static files from uploads directory
+app.use('/uploads', express.static(path.join(__dirname, 'server', 'uploads'), {
   maxAge: '1d',
   etag: true,
   setHeaders: secureStaticFiles,
@@ -125,7 +110,11 @@ app.use((err, req, res, next) => {
 
 const startServer = async () => {
   try {
-    await verifyTransporter();
+    console.log('📧 Verifying email transporter...');
+    const emailReady = await verifyTransporter();
+    if (!emailReady) {
+      console.warn('⚠️ WARNING: Email transporter failed to initialize. Contact form may not work.');
+    }
     
     const server = app.listen(PORT, '0.0.0.0', () => {
       console.log(`🌐 Server running on port: ${PORT}`);
