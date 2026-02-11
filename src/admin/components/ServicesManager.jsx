@@ -60,15 +60,16 @@ const ServicesManager = () => {
       const result = await response.json();
       
       if (result.success) {
-        setMessage('Services updated!');
+        setMessage({ text: 'Services updated!', type: 'success' });
         setTimeout(() => setMessage(''), 5000);
       } else {
-        setMessage(formatValidationErrors(result) || 'Failed to save.');
+        setMessage({ text: formatValidationErrors(result) || 'Failed to save.', type: 'error' });
         setTimeout(() => setMessage(''), 5000);
       }
     } catch (error) {
       console.error('Save failed:', error);
-      setMessage('Failed to save.');
+      const errorMsg = error.data ? formatValidationErrors(error.data) : 'Failed to save.';
+      setMessage({ text: errorMsg, type: 'error' });
       setTimeout(() => setMessage(''), 5000);
     } finally {
       setSaving(false);
@@ -138,7 +139,11 @@ const ServicesManager = () => {
         {saving ? 'Saving...' : 'Save All Changes'}
       </button>
       
-      {message && <p className="services-manager__message">{message}</p>}
+      {message && (
+        <p className={`services-manager__message services-manager__message--${message.type}`}>
+          {message.text}
+        </p>
+      )}
     </div>
   );
 };

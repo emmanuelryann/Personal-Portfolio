@@ -6,13 +6,13 @@ const getTransporter = () => {
   if (!transporter) {
     transporter = createTransport({
       host: 'smtp.gmail.com',
-      port: 465,
-      secure: true, // Use SSL
+      port: 587,
+      secure: false, // Use STARTTLS
       auth: {
         user: process.env.NODEMAILER_USER,
         pass: process.env.NODEMAILER_PASS
       },
-      connectionTimeout: 10000, // 10 seconds timeout
+      connectionTimeout: 10000, 
       greetingTimeout: 10000,
       socketTimeout: 10000
     });

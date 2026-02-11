@@ -102,5 +102,12 @@
 
 .portfolio-manager__message {
   margin-top: 1rem;
-  color: green;
+}
+
+.portfolio-manager__message--success {
+  color: #96bb7c;
+}
+
+.portfolio-manager__message--error {
+  color: #ff6b6b;
 }

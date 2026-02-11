@@ -389,7 +389,7 @@ function Portfolio() {
 
         {/* Skills Section - Full Width */}
         <div className="skills-container reveal">
-          <h2 className="section-title skills-section-title">My Skills</h2>
+          <h2 className="section-title">My Skills</h2>
           <div className="skills-grid reveal">
             {content.skills.map((skill, index) => (
               <div key={index} className="skill-card">

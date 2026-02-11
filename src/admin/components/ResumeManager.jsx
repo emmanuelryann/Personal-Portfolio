@@ -84,11 +84,11 @@ const ResumeManager = () => {
         throw new Error(formatValidationErrors(eduData));
       }
       
-      setMessage('Resume updated!');
+      setMessage({ text: 'Resume updated!', type: 'success' });
       setTimeout(() => setMessage(''), 5000);
     } catch (error) {
       console.error('Save failed:', error);
-      setMessage(error.message || 'Failed to save.');
+      setMessage({ text: error.message || 'Failed to save.', type: 'error' });
       setTimeout(() => setMessage(''), 5000);
     } finally {
       setSaving(false);
@@ -170,7 +170,11 @@ const ResumeManager = () => {
         {saving ? 'Saving...' : 'Save Resume'}
       </button>
       
-      {message && <p className="resume-manager__message">{message}</p>}
+      {message && (
+        <p className={`resume-manager__message resume-manager__message--${message.type}`}>
+          {message.text}
+        </p>
+      )}
     </div>
   );
 };

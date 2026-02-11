@@ -76,5 +76,12 @@
 
 .services-manager__message {
   margin-top: 1rem;
-  color: green;
+}
+
+.services-manager__message--success {
+  color: #96bb7c;
+}
+
+.services-manager__message--error {
+  color: #ff6b6b;
 }

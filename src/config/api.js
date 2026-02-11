@@ -50,8 +50,16 @@ export const authenticatedFetch = async (url, options = {}) => {
   
   if (response.status === 401) {
     localStorage.removeItem('adminToken');
-    
     window.location.href = '/admin/login';
+    return response;
+  }
+  
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    const error = new Error(errorData.message || `API error: ${response.status}`);
+    error.status = response.status;
+    error.data = errorData;
+    throw error;
   }
   
   return response;

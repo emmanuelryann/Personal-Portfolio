@@ -94,5 +94,12 @@
 
 .testimonials-manager__message {
   margin-top: 1rem;
-  color: green;
+}
+
+.testimonials-manager__message--success {
+  color: #96bb7c;
+}
+
+.testimonials-manager__message--error {
+  color: #ff6b6b;
 }

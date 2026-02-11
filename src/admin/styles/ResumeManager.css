@@ -82,5 +82,12 @@
 
 .resume-manager__message {
   margin-top: 1rem;
-  color: green;
+}
+
+.resume-manager__message--success {
+  color: #96bb7c;
+}
+
+.resume-manager__message--error {
+  color: #ff6b6b;
 }

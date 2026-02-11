@@ -112,5 +112,12 @@
 
 .skills-manager__message {
   margin-top: 1rem;
-  color: green;
+}
+
+.skills-manager__message--success {
+  color: #96bb7c;
+}
+
+.skills-manager__message--error {
+  color: #ff6b6b;
 }

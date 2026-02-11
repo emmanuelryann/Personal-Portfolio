@@ -288,7 +288,7 @@ body.menu-open {
 }
 
 .about-text h3 {
-  font-size: clamp(1.25rem, 4vw, 2rem);
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
   color: var(--text-dark);
   margin-bottom: clamp(0.75rem, 2vh, 1.25rem);
 }
@@ -346,10 +346,6 @@ body.menu-open {
 /* Skills Grid */
 .skills-container {
   margin-top: 6rem;
-}
-
-.skills-section-title {
-  font-size: 2rem;
 }
 
 .skills-grid {
@@ -543,7 +539,7 @@ body.menu-open {
 }
 
 .resume-item h4 {
-  font-size: 1.25rem;
+  font-size: clamp(1.1rem, 3vw, 1.4rem);
   font-weight: 600;
   color: var(--text-dark);
   margin: 0;
@@ -897,6 +893,10 @@ body.menu-open {
 }
 
 @media (max-width: 48rem) {
+  .hero {
+    background-attachment: scroll !important;
+  }
+
   .nav-menu {
     position: fixed;
     top: 0;

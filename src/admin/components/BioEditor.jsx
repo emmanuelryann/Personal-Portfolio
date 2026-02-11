@@ -47,15 +47,16 @@ const BioEditor = () => {
       const result = await response.json();
       
       if (result.success) {
-        setMessage('Bio updated successfully!');
+        setMessage({ text: 'Bio updated successfully!', type: 'success' });
         setTimeout(() => setMessage(''), 5000);
       } else {
-        setMessage(formatValidationErrors(result) || 'Failed to save changes.');
+        setMessage({ text: formatValidationErrors(result) || 'Failed to save changes.', type: 'error' });
         setTimeout(() => setMessage(''), 5000);
       }
     } catch (error) {
       console.error('Save failed', error);
-      setMessage('Failed to save changes.');
+      const errorMsg = error.data ? formatValidationErrors(error.data) : 'Failed to save changes.';
+      setMessage({ text: errorMsg, type: 'error' });
       setTimeout(() => setMessage(''), 5000);
     } finally {
       setSaving(false);
@@ -146,8 +147,8 @@ const BioEditor = () => {
         </button>
         
         {message && (
-          <p className={`bio-editor__message ${message.includes('Failed') ? 'bio-editor__message--error' : 'bio-editor__message--success'}`}>
-            {message}
+          <p className={`bio-editor__message bio-editor__message--${message.type}`}>
+            {message.text}
           </p>
         )}
       </form>

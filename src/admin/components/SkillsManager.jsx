@@ -82,15 +82,16 @@ const SkillsManager = () => {
       const result = await response.json();
       
       if (result.success) {
-        setMessage('Skills updated successfully!');
+        setMessage({ text: 'Skills updated successfully!', type: 'success' });
         setTimeout(() => setMessage(''), 5000);
       } else {
-        setMessage(formatValidationErrors(result) || 'Failed to update skills.');
+        setMessage({ text: formatValidationErrors(result) || 'Failed to update skills.', type: 'error' });
         setTimeout(() => setMessage(''), 5000);
       }
     } catch (error) {
       console.error('Save failed:', error);
-      setMessage('Failed to update skills.');
+      const errorMsg = error.data ? formatValidationErrors(error.data) : 'Failed to update skills.';
+      setMessage({ text: errorMsg, type: 'error' });
       setTimeout(() => setMessage(''), 5000);
     } finally {
       setSaving(false);
@@ -162,7 +163,11 @@ const SkillsManager = () => {
         {saving ? 'Saving...' : 'Save All Changes'}
       </button>
       
-      {message && <p className="skills-manager__message">{message}</p>}
+      {message && (
+        <p className={`skills-manager__message skills-manager__message--${message.type}`}>
+          {message.text}
+        </p>
+      )}
     </div>
   );
 };
