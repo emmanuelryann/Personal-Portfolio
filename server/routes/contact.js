@@ -49,15 +49,18 @@ router.post('/',
 
       try {
         await sendContactEmail({ firstName, lastName, email, subject, message });
+        
+        res.status(200).json({
+          success: true,
+          message: 'Your message has been sent successfully!'
+        });
       } catch (emailError) {
         console.error('Email error:', emailError);
-        // Log but don't fail the request. Might want to implement a retry mechanism here
+        res.status(500).json({
+          success: false,
+          message: 'Message saved to database, but failed to send email notification. We will still see your message!'
+        });
       }
-
-      res.status(200).json({
-        success: true,
-        message: 'Your message has been sent successfully!'
-      });
 
     } catch (error) {
       console.error('Contact form error:', error);

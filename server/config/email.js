@@ -5,16 +5,15 @@ let transporter = null;
 const getTransporter = () => {
   if (!transporter) {
     transporter = createTransport({
-      host: 'smtp.gmail.com',
-      port: 587,
-      secure: false, // Use STARTTLS
+      service: 'gmail',
       auth: {
         user: process.env.NODEMAILER_USER,
         pass: process.env.NODEMAILER_PASS
       },
-      connectionTimeout: 10000, 
-      greetingTimeout: 10000,
-      socketTimeout: 10000
+      connectionTimeout: 20000, // Increase to 20 seconds
+      greetingTimeout: 20000,
+      socketTimeout: 20000,
+      pool: true, // Use connection pool
     });
   }
   return transporter;
