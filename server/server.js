@@ -58,7 +58,22 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// 404 handler
+// Serve static files from the frontend build directory
+app.use(express.static(path.join(__dirname, 'dist')));
+
+// SPA Catch-all: Send all non-API requests to index.html
+app.get('*', (req, res) => {
+  // Check if it's an API request that hasn't been handled
+  if (req.path.startsWith('/api')) {
+    return res.status(404).json({
+      success: false,
+      message: 'API endpoint not found'
+    });
+  }
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
+
+// 404 handler for any remaining requests (though '*' should catch most)
 app.use((req, res) => {
   console.warn('⚠️  404 Not Found:', {
     method: req.method,
