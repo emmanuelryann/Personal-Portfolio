@@ -260,7 +260,7 @@ body.menu-open {
 }
 
 .section-title {
-  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
   font-weight: 700;
   color: var(--text-dark);
   margin-bottom: clamp(3rem, 8vh, 5rem);
@@ -539,7 +539,7 @@ body.menu-open {
 }
 
 .resume-item h4 {
-  font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+  font-size: clamp(1.05rem, 2.2vw, 1.25rem);
   font-weight: 600;
   color: var(--text-dark);
   margin: 0;
@@ -863,6 +863,7 @@ body.menu-open {
 
 .social-link:hover {
   background-color: var(--primary-color);
+  color: #fff
 }
 
 .footer-bottom {

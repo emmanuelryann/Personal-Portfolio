@@ -10,10 +10,14 @@ const getTransporter = () => {
         user: process.env.NODEMAILER_USER,
         pass: process.env.NODEMAILER_PASS
       },
-      connectionTimeout: 20000, // Increase to 20 seconds
+      connectionTimeout: 20000,
       greetingTimeout: 20000,
       socketTimeout: 20000,
-      pool: true, // Use connection pool
+      maxConnections: 5,
+      maxMessages: 100,  
+      pool: true,
+      debug: true,
+      logger: true
     });
   }
   return transporter;

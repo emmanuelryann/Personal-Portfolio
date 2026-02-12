@@ -669,7 +669,7 @@ function Portfolio() {
                   <a href="#" className="social-link" aria-label="Instagram"><Icons.Instagram /></a>
                   <a href="#" className="social-link" aria-label="Twitter"><Icons.Twitter /></a>
                   <a href="https://linkedin.com/in/emmanuelryan" className="social-link" aria-label="LinkedIn"><Icons.Linkedin /></a>
-                  <a href="https://github.com/ryan4621" className="social-link" aria-label="GitHub"><Icons.GitHub /></a>
+                  <a href="https://github.com/emmanuelryann" className="social-link" aria-label="GitHub"><Icons.GitHub /></a>
                 </div>
               </div>
             </div>
