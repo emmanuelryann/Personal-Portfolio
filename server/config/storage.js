@@ -3,8 +3,6 @@ import fs from 'fs';
 
 const __dirname = path.resolve();
 
-// In Railway, mounting a volume at /app/storage is typical
-// We allow override via STORAGE_PATH env var
 const storageRoot = process.env.STORAGE_PATH || (process.env.NODE_ENV === 'production' ? '/app/storage' : path.join(__dirname, 'server'));
 
 export const STORAGE_CONFIG = {

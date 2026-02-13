@@ -22,6 +22,15 @@ checkEnvVars();
 ensureStorageExists();
 syncInitialData();
 
+console.log('📂 Storage Configuration:');
+console.log(`- Root: ${STORAGE_CONFIG.root}`);
+console.log(`- Data Path: ${STORAGE_CONFIG.dataPath}`);
+console.log(`- Uploads Dir: ${STORAGE_CONFIG.uploadsDir}`);
+console.log(`- Uploads Dir exists: ${fs.existsSync(STORAGE_CONFIG.uploadsDir)}`);
+if (fs.existsSync(STORAGE_CONFIG.uploadsDir)) {
+  console.log(`- Uploads count: ${fs.readdirSync(STORAGE_CONFIG.uploadsDir).length}`);
+}
+
 const app = express();
 const PORT = process.env.PORT || 5001;
 const NODE_ENV = process.env.NODE_ENV || 'development';
