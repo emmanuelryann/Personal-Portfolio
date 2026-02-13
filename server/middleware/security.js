@@ -61,8 +61,8 @@ const securityHeaders = helmet({
 const checkEnvVars = () => {
   const requiredEnvVars = [
     'JWT_SECRET',
-    'NODEMAILER_USER',
-    'NODEMAILER_PASS',
+    'FROM_EMAIL',
+    'TO_EMAIL',
     'WEBSITE_URL',
     'PORT'
   ];

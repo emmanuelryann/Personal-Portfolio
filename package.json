@@ -28,6 +28,7 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.13.0",
+    "resend": "^6.9.2",
     "serverless-http": "^4.0.0",
     "uuid": "^13.0.0"
   },
