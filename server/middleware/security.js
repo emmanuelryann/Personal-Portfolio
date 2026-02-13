@@ -30,6 +30,7 @@ const securityHeaders = helmet({
         "data:",
         "https:",
         "blob:",
+        process.env.BACKEND_URL || "*"
       ],
       scriptSrc: [
         "'self'",
@@ -39,7 +40,8 @@ const securityHeaders = helmet({
         "'self'",
         process.env.NODE_ENV === 'development' 
           ? "http://localhost:*" 
-          : (process.env.WEBSITE_URL || "*")
+          : (process.env.WEBSITE_URL || "*"),
+        process.env.BACKEND_URL || "*"
       ],
       frameSrc: ["'none'"],
       objectSrc: ["'none'"],

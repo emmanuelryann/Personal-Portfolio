@@ -31,7 +31,9 @@ const writeData = (data) => {
 
 const prependBaseUrl = (obj) => {
   if (!obj) return obj;
-  const baseUrl = process.env.API_URL || process.env.WEBSITE_URL || '';
+  // Images are served by the backend (Render).
+  // WEBSITE_URL is usually the frontend (Netlify).
+  const baseUrl = process.env.BACKEND_URL || '';
   
   if (typeof obj === 'string') {
     if (obj.startsWith('/uploads/')) {

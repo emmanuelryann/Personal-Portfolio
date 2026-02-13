@@ -29,4 +29,3 @@ server/.env
 # Netlify
 netlify/
 netlify.toml
-public/_redirects
