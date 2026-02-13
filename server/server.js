@@ -22,20 +22,6 @@ checkEnvVars();
 ensureStorageExists();
 syncInitialData();
 
-console.log('📂 Storage Configuration:');
-console.log(`- Root: ${STORAGE_CONFIG.root}`);
-console.log(`- Data Path: ${STORAGE_CONFIG.dataPath}`);
-console.log(`- Uploads Dir: ${STORAGE_CONFIG.uploadsDir}`);
-console.log(`- Uploads Dir exists: ${fs.existsSync(STORAGE_CONFIG.uploadsDir)}`);
-if (fs.existsSync(STORAGE_CONFIG.uploadsDir)) {
-  const files = fs.readdirSync(STORAGE_CONFIG.uploadsDir);
-  console.log(`- Uploads count: ${files.length}`);
-  console.log(`- Files: [${files.join(', ')}]`);
-}
-
-console.log(`- WEBSITE_URL: ${process.env.WEBSITE_URL || 'NOT SET'}`);
-console.log(`- NODE_ENV: ${process.env.NODE_ENV}`);
-
 const app = express();
 const PORT = process.env.PORT || 5001;
 const NODE_ENV = process.env.NODE_ENV || 'development';
@@ -76,12 +62,9 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Serve static files from the frontend build directory
 app.use(express.static(path.join(__dirname, 'dist')));
 
-// SPA Catch-all: Send all non-API requests to index.html
 app.get('*', (req, res) => {
-  // Check if it's an API request that hasn't been handled
   if (req.path.startsWith('/api')) {
     return res.status(404).json({
       success: false,
@@ -91,7 +74,6 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
-// 404 handler for any remaining requests (though '*' should catch most)
 app.use((req, res) => {
   console.warn('⚠️  404 Not Found:', {
     method: req.method,

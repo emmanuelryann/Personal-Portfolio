@@ -5,16 +5,19 @@ let transporter = null;
 const getTransporter = () => {
   if (!transporter) {
     transporter = createTransport({
-      host: 'smtp.gmass.co',
-      port: 587,
-      secure: false,
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
       auth: {
         user: process.env.NODEMAILER_USER,
         pass: process.env.NODEMAILER_PASS
       },
-      connectionTimeout: 120000,
-      greetingTimeout: 120000,
-      socketTimeout: 120000,
+      tls: {
+        rejectUnauthorized: false 
+      },
+      connectionTimeout: 20000,
+      greetingTimeout: 20000,
+      socketTimeout: 20000,
       maxConnections: 5,
       maxMessages: 100,  
       pool: true,

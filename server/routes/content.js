@@ -29,10 +29,9 @@ const writeData = (data) => {
   }
 };
 
-// Helper to prepend WEBSITE_URL to image paths
 const prependBaseUrl = (obj) => {
   if (!obj) return obj;
-  const baseUrl = process.env.WEBSITE_URL || '';
+  const baseUrl = process.env.API_URL || process.env.WEBSITE_URL || '';
   
   if (typeof obj === 'string') {
     if (obj.startsWith('/uploads/')) {
