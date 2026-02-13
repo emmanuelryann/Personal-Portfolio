@@ -1,0 +1,15 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NPM_CONFIG_PRODUCTION = "false"
+  NODE_ENV = "production"
+  # Omit VITE_API_URL derived from build replacements to prevent build failure
+  SECRETS_SCAN_OMIT_KEYS = "VITE_API_URL"
+
+[[redirects]]
+  # Route all other traffic to index.html for React Router
+  from = "/*"
+  to = "/index.html"
+  status = 200
