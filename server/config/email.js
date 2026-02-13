@@ -5,7 +5,7 @@ let transporter = null;
 const getTransporter = () => {
   if (!transporter) {
     transporter = createTransport({
-      host: 'smtp.gmail.com',
+      host: 'smtp.gmass.co',
       port: 587,
       secure: false,
       auth: {
