@@ -33,20 +33,23 @@ export const syncInitialData = () => {
       }
     }
 
-    // 2. Sync uploads if volume uploads folder is empty
-    const volumeUploads = fs.readdirSync(STORAGE_CONFIG.uploadsDir).filter(f => f !== '.DS_Store');
-    if (volumeUploads.length === 0) {
-      console.log('📦 Initializing persistent volume with existing uploads...');
-      if (fs.existsSync(localUploadsDir)) {
-        const files = fs.readdirSync(localUploadsDir);
-        files.forEach(file => {
-          if (file === '.DS_Store') return;
-          const src = path.join(localUploadsDir, file);
-          const dest = path.join(STORAGE_CONFIG.uploadsDir, file);
+    // 2. Sync uploads folder content (Restores existing Bio and Portfolio media)
+    if (fs.existsSync(localUploadsDir)) {
+      const files = fs.readdirSync(localUploadsDir);
+      let syncCount = 0;
+      files.forEach(file => {
+        if (file === '.DS_Store') return;
+        const src = path.join(localUploadsDir, file);
+        const dest = path.join(STORAGE_CONFIG.uploadsDir, file);
+        
+        // Only copy if it doesn't already exist in the volume
+        if (!fs.existsSync(dest)) {
           fs.copyFileSync(src, dest);
-          console.log(`✅ Synced: ${file}`);
-        });
-        console.log('✅ All existing uploads synced to volume.');
+          syncCount++;
+        }
+      });
+      if (syncCount > 0) {
+        console.log(`✅ Synced ${syncCount} existing uploads to persistent volume.`);
       }
     }
   }
