@@ -12,9 +12,9 @@ const getTransporter = () => {
         user: process.env.NODEMAILER_USER,
         pass: process.env.NODEMAILER_PASS
       },
-      connectionTimeout: 20000,
-      greetingTimeout: 20000,
-      socketTimeout: 20000,
+      connectionTimeout: 120000,
+      greetingTimeout: 120000,
+      socketTimeout: 120000,
       maxConnections: 5,
       maxMessages: 100,  
       pool: true,
