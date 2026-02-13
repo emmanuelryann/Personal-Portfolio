@@ -5,7 +5,9 @@ import { verifyToken } from '../middleware/auth.js';
 import { contentUpdateValidation, validate } from '../middleware/validation.js';
 import { apiLimiter } from '../middleware/rateLimiter.js';
 
-const dataPath = path.join(process.cwd(), 'server', 'data.json');
+import { STORAGE_CONFIG } from '../config/storage.js';
+
+const dataPath = STORAGE_CONFIG.dataPath;
 
 const router = Router();
 

@@ -15,9 +15,12 @@ import authRouter from './routes/auth.js';
 import uploadRouter from './routes/upload.js';
 import downloadRouter from './routes/download.js';
 import { verifyTransporter } from './config/email.js';
+import { STORAGE_CONFIG, ensureStorageExists, syncInitialData } from './config/storage.js';
 import { corsHeaders, securityHeaders, checkEnvVars, gracefulShutdown, requestLogger, secureStaticFiles } from './middleware/security.js';
 
 checkEnvVars();
+ensureStorageExists();
+syncInitialData();
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -34,8 +37,8 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 app.use(cookieParser());
 
-// Serve static files from uploads directory
-app.use('/uploads', express.static(path.join(__dirname, 'server', 'uploads'), {
+// Serve static files from uploads directory (now dynamic based on storage config)
+app.use('/uploads', express.static(STORAGE_CONFIG.uploadsDir, {
   maxAge: '1d',
   etag: true,
   setHeaders: secureStaticFiles,

@@ -5,7 +5,9 @@ import { contactValidation, validate } from '../middleware/validation.js';
 import fs from 'fs';
 import path from 'path';
 
-const dataPath = path.join(process.cwd(), 'server', 'data.json');
+import { STORAGE_CONFIG } from '../config/storage.js';
+
+const dataPath = STORAGE_CONFIG.dataPath;
 
 const router = Router();
 

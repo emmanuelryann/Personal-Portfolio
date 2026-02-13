@@ -3,7 +3,9 @@ import path from 'path';
 import fs from 'fs';
 import { apiLimiter } from '../middleware/rateLimiter.js';
 
-const uploadsDir = path.join(process.cwd(), 'server', 'uploads');
+import { STORAGE_CONFIG } from '../config/storage.js';
+
+const uploadsDir = STORAGE_CONFIG.uploadsDir;
 
 const router = Router();
 

@@ -5,11 +5,9 @@ import fs from 'fs';
 import { verifyToken } from '../middleware/auth.js';
 import { apiLimiter, uploadLimiter } from '../middleware/rateLimiter.js';
 
-const uploadDir = path.join(process.cwd(), 'server', 'uploads');
+import { STORAGE_CONFIG } from '../config/storage.js';
 
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+const uploadDir = STORAGE_CONFIG.uploadsDir;
 
 // Allowed file types
 const ALLOWED_IMAGE_TYPES = {
