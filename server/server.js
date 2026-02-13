@@ -28,8 +28,13 @@ console.log(`- Data Path: ${STORAGE_CONFIG.dataPath}`);
 console.log(`- Uploads Dir: ${STORAGE_CONFIG.uploadsDir}`);
 console.log(`- Uploads Dir exists: ${fs.existsSync(STORAGE_CONFIG.uploadsDir)}`);
 if (fs.existsSync(STORAGE_CONFIG.uploadsDir)) {
-  console.log(`- Uploads count: ${fs.readdirSync(STORAGE_CONFIG.uploadsDir).length}`);
+  const files = fs.readdirSync(STORAGE_CONFIG.uploadsDir);
+  console.log(`- Uploads count: ${files.length}`);
+  console.log(`- Files: [${files.join(', ')}]`);
 }
+
+console.log(`- WEBSITE_URL: ${process.env.WEBSITE_URL || 'NOT SET'}`);
+console.log(`- NODE_ENV: ${process.env.NODE_ENV}`);
 
 const app = express();
 const PORT = process.env.PORT || 5001;
