@@ -38,6 +38,7 @@ app.use(cookieParser());
 app.use('/uploads', express.static(path.join(__dirname, 'server', 'uploads'), {
   maxAge: '1d',
   etag: true,
+  setHeaders: secureStaticFiles,
 }));
 
 // API Routes
