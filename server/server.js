@@ -15,7 +15,7 @@ import authRouter from './routes/auth.js';
 import uploadRouter from './routes/upload.js';
 import { verifyTransporter } from './config/email.js';
 import connectDB from './config/db.js';
-import { corsHeaders, securityHeaders, checkEnvVars, gracefulShutdown, requestLogger } from './middleware/security.js';
+import { corsHeaders, securityHeaders, checkEnvVars, gracefulShutdown, requestLogger, secureStaticFiles } from './middleware/security.js';
 
 checkEnvVars();
 
