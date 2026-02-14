@@ -5,9 +5,6 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load environment variables
-// If running from root: path is ../.env, if from inside server: path is .env
-// To be safe, we check both or use the absolute path calculated from __dirname
 const envPath = path.join(__dirname, '.env');
 dotenv.config({ path: envPath });
 
@@ -39,21 +36,18 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 app.use(cookieParser());
 
-// Serve static files from uploads directory (Existing images in Git)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
   maxAge: '1d',
   etag: true,
   setHeaders: secureStaticFiles,
 }));
 
-// API Routes
 app.use('/api/contact', contactRouter);
 app.use('/api/content', contentRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/upload', uploadRouter);
 app.use('/api', downloadRouter);
 
-// Basic health check
 app.get('/api/health', (req, res) => {
   res.json({ 
     success: true,
@@ -77,7 +71,6 @@ app.use((req, res) => {
   });
 });
 
-// Error handler
 app.use((err, req, res, next) => {
   console.error('❌ Server error:', err);
   
@@ -99,7 +92,6 @@ app.use((err, req, res, next) => {
 
 const startServer = async () => {
   try {
-    // Connect to Database
     await connectDB();
 
     console.log('📧 Verifying email transporter...');

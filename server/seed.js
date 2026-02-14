@@ -23,10 +23,8 @@ const seedDatabase = async () => {
 
     const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
 
-    // Migrate password hash if it exists, otherwise use a placeholder
     const passwordHash = data.admin?.passwordHash || '$2b$10$PlaceholderHashIfMissing';
 
-    // Adapt data structure to match schema exactly
     const portfolioData = {
       content: data.content || {},
       submissions: data.submissions || [],
@@ -37,7 +35,6 @@ const seedDatabase = async () => {
       }
     };
 
-    // Check if portfolio already exists
     const existing = await Portfolio.findOne();
     if (existing) {
       console.log('ℹ️ Database already contains data. Overwriting with local data.json...');

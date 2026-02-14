@@ -125,7 +125,6 @@ const requestLogger = (req, res, next) => {
   next();
 };
 
-// Security headers middleware for static files
 const secureStaticFiles = (res, filePath) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('Cache-Control', 'public, max-age=86400');

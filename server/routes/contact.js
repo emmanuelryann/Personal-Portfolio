@@ -26,7 +26,6 @@ router.post('/',
         userAgent: req.get('user-agent')
       };
 
-      // Save to MongoDB
       try {
         const portfolio = await Portfolio.findOne();
         if (portfolio) {

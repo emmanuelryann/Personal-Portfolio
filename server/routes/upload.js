@@ -4,18 +4,16 @@ import { verifyToken } from '../middleware/auth.js';
 import { apiLimiter, uploadLimiter } from '../middleware/rateLimiter.js';
 import { storage } from '../config/cloudinary.js';
 
-// Multer configuration for Cloudinary
 const upload = multer({ 
   storage,
   limits: { 
-    fileSize: 10 * 1024 * 1024, // 10MB limit
+    fileSize: 10 * 1024 * 1024,
     files: 1
   }
 });
 
 const router = Router();
 
-// Upload image endpoint
 router.post('/image', 
   verifyToken,
   uploadLimiter,
@@ -29,7 +27,6 @@ router.post('/image',
         });
       }
       
-      // Cloudinary returns the full SSL URL in path
       res.json({ 
         success: true, 
         message: 'Image uploaded successfully', 
@@ -48,7 +45,6 @@ router.post('/image',
   }
 );
 
-// Upload CV/PDF endpoint
 router.post('/cv', 
   verifyToken,
   uploadLimiter,
@@ -80,7 +76,6 @@ router.post('/cv',
   }
 );
 
-// Error handling middleware for multer
 router.use((error, req, res, next) => {
   if (error instanceof multer.MulterError) {
     if (error.code === 'LIMIT_FILE_SIZE') {

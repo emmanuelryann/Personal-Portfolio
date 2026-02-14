@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -13,22 +14,29 @@ router.get('/download-cv', async (req, res) => {
   try {
     const data = await Portfolio.findOne();
     
-    // If we have a Cloudinary URL in the database, redirect to it
     if (data?.content?.cvUrl) {
       return res.redirect(data.content.cvUrl);
     }
 
-    // Fallback to local file
     const cvPath = path.join(__dirname, '..', 'uploads', 'Mgbeadichie Emmanuel - Resume.pdf');
-    res.download(cvPath, 'Mgbeadichie_Emmanuel_Resume.pdf', (err) => {
-      if (err) {
-        console.error('Error downloading CV:', err);
-        res.status(500).json({ success: false, message: 'Failed to download CV' });
+    
+    if (!fs.existsSync(cvPath)) {
+      console.error('CV file not found:', cvPath);
+      return res.status(404).json({ success: false, message: 'CV file not found' });
+    }
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'inline; filename="Mgbeadichie_Emmanuel_Resume.pdf"');
+    
+    res.sendFile(cvPath, (err) => {
+      if (err && !res.headersSent) {
+        console.error('Error sending CV:', err);
+        res.status(500).json({ success: false, message: 'Failed to view CV' });
       }
     });
   } catch (error) {
-    console.error('CV download error:', error);
-    res.status(500).json({ success: false, message: 'CV download failed' });
+    console.error('CV view error:', error);
+    res.status(500).json({ success: false, message: 'CV view failed' });
   }
 });
 

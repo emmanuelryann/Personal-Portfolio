@@ -6,10 +6,8 @@ import { apiLimiter } from '../middleware/rateLimiter.js';
 
 const router = Router();
 
-// Helper to prepend BACKEND_URL to local image paths
 const prependBaseUrl = (obj) => {
   if (!obj) return obj;
-  // Use BACKEND_URL for cross-domain resolution (Netlify -> Render)
   const baseUrl = process.env.BACKEND_URL || '';
   
   if (typeof obj === 'string') {
@@ -54,7 +52,6 @@ router.get('/', apiLimiter, async (req, res) => {
       cvUrl: data.content?.cvUrl || ''
     };
     
-    // Resolve local paths for split deployment
     const formattedContent = prependBaseUrl(publicContent);
     
     res.json({ 

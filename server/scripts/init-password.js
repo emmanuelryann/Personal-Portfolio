@@ -15,7 +15,6 @@ async function setInitialPassword() {
 
     const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
     
-    // Only update if not already set or if explicitly resetting
     data.admin.passwordHash = hash;
 
     fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));

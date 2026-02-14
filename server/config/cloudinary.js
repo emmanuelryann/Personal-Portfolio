@@ -2,7 +2,6 @@ import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import path from 'path';
 
-// You can use the full CLOUDINARY_URL or individual keys
 if (process.env.CLOUDINARY_URL) {
   cloudinary.config({
     cloudinary_url: process.env.CLOUDINARY_URL
@@ -18,13 +17,12 @@ if (process.env.CLOUDINARY_URL) {
 export const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async (req, file) => {
-    // Generate folder based on file type
     const isPDF = file.mimetype === 'application/pdf';
     return {
       folder: isPDF ? 'portfolio/docs' : 'portfolio/uploads',
       allowed_formats: isPDF ? ['pdf'] : ['jpg', 'png', 'gif', 'webp'],
       public_id: `${path.basename(file.originalname, path.extname(file.originalname))}-${Date.now()}`,
-      resource_type: isPDF ? 'raw' : 'image',
+      resource_type: isPDF ? 'image' : 'image',
     };
   },
 });
