@@ -1,11 +1,15 @@
 import dotenv from 'dotenv';
 import path from 'path';
-import fs from 'fs';
+import { fileURLToPath } from 'url';
 
-const __dirname = path.resolve();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Load environment variables
-dotenv.config({ path: path.join(__dirname, 'server', '.env') });
+// If running from root: path is ../.env, if from inside server: path is .env
+// To be safe, we check both or use the absolute path calculated from __dirname
+const envPath = path.join(__dirname, '.env');
+dotenv.config({ path: envPath });
 
 import express from 'express';
 import cookieParser from 'cookie-parser';
@@ -35,7 +39,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 
 // Serve static files from uploads directory (Existing images in Git)
-app.use('/uploads', express.static(path.join(__dirname, 'server', 'uploads'), {
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
   maxAge: '1d',
   etag: true,
   setHeaders: secureStaticFiles,
@@ -56,18 +60,6 @@ app.get('/api/health', (req, res) => {
     environment: NODE_ENV,
     timestamp: new Date().toISOString(),
   });
-});
-
-app.use(express.static(path.join(__dirname, 'dist')));
-
-app.get('*', (req, res) => {
-  if (req.path.startsWith('/api')) {
-    return res.status(404).json({
-      success: false,
-      message: 'API endpoint not found'
-    });
-  }
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 app.use((req, res) => {
