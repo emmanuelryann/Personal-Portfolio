@@ -17,6 +17,7 @@ import contactRouter from './routes/contact.js';
 import contentRouter from './routes/content.js';
 import authRouter from './routes/auth.js';
 import uploadRouter from './routes/upload.js';
+import downloadRouter from './routes/download.js';
 import { verifyTransporter } from './config/email.js';
 import connectDB from './config/db.js';
 import { corsHeaders, securityHeaders, checkEnvVars, gracefulShutdown, requestLogger, secureStaticFiles } from './middleware/security.js';
@@ -50,6 +51,7 @@ app.use('/api/contact', contactRouter);
 app.use('/api/content', contentRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/upload', uploadRouter);
+app.use('/api', downloadRouter);
 
 // Basic health check
 app.get('/api/health', (req, res) => {

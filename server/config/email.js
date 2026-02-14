@@ -1,3 +1,5 @@
+import { Resend } from 'resend';
+
 let resendClient = null;
 
 const getResendClient = () => {
