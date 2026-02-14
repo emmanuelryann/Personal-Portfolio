@@ -1,26 +1,22 @@
 import bcrypt from 'bcryptjs';
 import { Router } from 'express';
-import fs from 'fs';
-import path from 'path';
+import Portfolio from '../models/Portfolio.js';
 import { generateToken, verifyToken } from '../middleware/auth.js';
 import { authLimiter } from '../middleware/rateLimiter.js';
 import { loginValidation, passwordChangeValidation, validate } from '../middleware/validation.js';
 
-import { STORAGE_CONFIG } from '../config/storage.js';
-
-const dataPath = STORAGE_CONFIG.dataPath;
-
 const router = Router();
-
-const readData = () => JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-const writeData = (data) => fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));
 
 router.post('/login', authLimiter, loginValidation, validate, async (req, res) => {
   try {
     const { password } = req.body;
-    const db = readData();
+    const portfolio = await Portfolio.findOne();
     
-    const isValid = await bcrypt.compare(password, db.admin.passwordHash);
+    if (!portfolio || !portfolio.adminSettings || !portfolio.adminSettings.password) {
+      return res.status(401).json({ success: false, message: 'Admin not configured' });
+    }
+
+    const isValid = await bcrypt.compare(password, portfolio.adminSettings.password);
 
     if (!isValid) {
       return res.status(401).json({ 
@@ -49,12 +45,12 @@ router.post('/login', authLimiter, loginValidation, validate, async (req, res) =
   }
 });
 
-router.post('/change-password', verifyToken, authLimiter, passwordChangeValidation,  validate, async (req, res) => {
+router.post('/change-password', verifyToken, authLimiter, passwordChangeValidation, validate, async (req, res) => {
     try {
       const { currentPassword, newPassword } = req.body;
-      const db = readData();
+      const portfolio = await Portfolio.findOne();
 
-      const isValid = await bcrypt.compare(currentPassword, db.admin.passwordHash);
+      const isValid = await bcrypt.compare(currentPassword, portfolio.adminSettings.password);
       if (!isValid) {
         return res.status(401).json({ 
           success: false, 
@@ -62,7 +58,7 @@ router.post('/change-password', verifyToken, authLimiter, passwordChangeValidati
         });
       }
 
-      const isSamePassword = await bcrypt.compare(newPassword, db.admin.passwordHash);
+      const isSamePassword = await bcrypt.compare(newPassword, portfolio.adminSettings.password);
       if (isSamePassword) {
         return res.status(400).json({ 
           success: false, 
@@ -73,9 +69,9 @@ router.post('/change-password', verifyToken, authLimiter, passwordChangeValidati
       const salt = await bcrypt.genSalt(12);
       const newHash = await bcrypt.hash(newPassword, salt);
 
-      db.admin.passwordHash = newHash;
-      db.admin.lastPasswordChange = new Date().toISOString();
-      writeData(db);
+      portfolio.adminSettings.password = newHash;
+      portfolio.adminSettings.lastPasswordChange = new Date().toISOString();
+      await portfolio.save();
 
       res.json({ 
         success: true, 
@@ -96,7 +92,7 @@ router.get('/verify', verifyToken, (req, res) => {
   res.json({ 
     success: true, 
     valid: true,
-    role: req.admin.role 
+    role: req.admin?.role || 'admin'
   });
 });
 

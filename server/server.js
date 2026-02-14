@@ -13,14 +13,11 @@ import contactRouter from './routes/contact.js';
 import contentRouter from './routes/content.js';
 import authRouter from './routes/auth.js';
 import uploadRouter from './routes/upload.js';
-import downloadRouter from './routes/download.js';
 import { verifyTransporter } from './config/email.js';
-import { STORAGE_CONFIG, ensureStorageExists, syncInitialData } from './config/storage.js';
-import { corsHeaders, securityHeaders, checkEnvVars, gracefulShutdown, requestLogger, secureStaticFiles } from './middleware/security.js';
+import connectDB from './config/db.js';
+import { corsHeaders, securityHeaders, checkEnvVars, gracefulShutdown, requestLogger } from './middleware/security.js';
 
 checkEnvVars();
-ensureStorageExists();
-syncInitialData();
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -37,19 +34,11 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 app.use(cookieParser());
 
-// Serve static files from uploads directory (now dynamic based on storage config)
-app.use('/uploads', express.static(STORAGE_CONFIG.uploadsDir, {
-  maxAge: '1d',
-  etag: true,
-  setHeaders: secureStaticFiles,
-}));
-
 // API Routes
 app.use('/api/contact', contactRouter);
 app.use('/api/content', contentRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/upload', uploadRouter);
-app.use('/api/download-cv', downloadRouter);
 
 // Basic health check
 app.get('/api/health', (req, res) => {
@@ -109,6 +98,9 @@ app.use((err, req, res, next) => {
 
 const startServer = async () => {
   try {
+    // Connect to Database
+    await connectDB();
+
     console.log('📧 Verifying email transporter...');
     const emailReady = await verifyTransporter();
     if (!emailReady) {

@@ -1,66 +1,19 @@
 import { Router } from 'express';
-import fs from 'fs';
-import path from 'path';
+import Portfolio from '../models/Portfolio.js';
 import { verifyToken } from '../middleware/auth.js';
 import { contentUpdateValidation, validate } from '../middleware/validation.js';
 import { apiLimiter } from '../middleware/rateLimiter.js';
 
-import { STORAGE_CONFIG } from '../config/storage.js';
-
-const dataPath = STORAGE_CONFIG.dataPath;
-
 const router = Router();
 
-const readData = () => {
+router.get('/', apiLimiter, async (req, res) => {
   try {
-    return JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-  } catch (error) {
-    console.error('Error reading data:', error);
-    throw new Error('Database read error');
-  }
-};
-
-const writeData = (data) => {
-  try {
-    fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));
-  } catch (error) {
-    console.error('Error writing data:', error);
-    throw new Error('Database write error');
-  }
-};
-
-const prependBaseUrl = (obj) => {
-  if (!obj) return obj;
-  // Images are served by the backend (Render).
-  // WEBSITE_URL is usually the frontend (Netlify).
-  const baseUrl = process.env.BACKEND_URL || '';
-  
-  if (typeof obj === 'string') {
-    if (obj.startsWith('/uploads/')) {
-      return `${baseUrl}${obj}`;
-    }
-    return obj;
-  }
-  
-  if (Array.isArray(obj)) {
-    return obj.map(item => prependBaseUrl(item));
-  }
-  
-  if (typeof obj === 'object') {
-    const newObj = {};
-    for (const key in obj) {
-      newObj[key] = prependBaseUrl(obj[key]);
-    }
-    return newObj;
-  }
-  
-  return obj;
-};
-
-router.get('/', apiLimiter, (req, res) => {
-  try {
-    const data = readData();
+    const data = await Portfolio.findOne();
     
+    if (!data) {
+      return res.status(404).json({ success: false, message: 'No content found' });
+    }
+
     const publicContent = {
       bio: data.content?.bio || {},
       skills: data.content?.skills || [],
@@ -72,12 +25,9 @@ router.get('/', apiLimiter, (req, res) => {
       contactInfo: data.content?.contactInfo || {}
     };
     
-    // Prepend base URL to all image paths
-    const formattedContent = prependBaseUrl(publicContent);
-    
     res.json({ 
       success: true, 
-      content: formattedContent 
+      content: publicContent 
     });
   } catch (error) {
     console.error('Error reading content:', error);
@@ -88,9 +38,10 @@ router.get('/', apiLimiter, (req, res) => {
   }
 });
 
-router.get('/submissions', verifyToken, apiLimiter, (req, res) => {
+router.get('/submissions', verifyToken, apiLimiter, async (req, res) => {
   try {
-    const data = readData();
+    const data = await Portfolio.findOne();
+    if (!data) return res.json({ success: true, submissions: [] });
     
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 20;
@@ -119,22 +70,23 @@ router.get('/submissions', verifyToken, apiLimiter, (req, res) => {
   }
 });
 
-router.delete('/submissions/:id', verifyToken, apiLimiter, (req, res) => {
+router.delete('/submissions/:id', verifyToken, apiLimiter, async (req, res) => {
   try {
     const { id } = req.params;
-    const data = readData();
+    const portfolio = await Portfolio.findOne();
+    if (!portfolio) return res.status(404).json({ success: false, message: 'Data not found' });
     
-    const initialLength = data.submissions?.length || 0;
-    data.submissions = (data.submissions || []).filter(sub => sub.id !== id);
+    const initialLength = portfolio.submissions?.length || 0;
+    portfolio.submissions = (portfolio.submissions || []).filter(sub => sub.id !== id);
     
-    if (data.submissions.length === initialLength) {
+    if (portfolio.submissions.length === initialLength) {
       return res.status(404).json({ 
         success: false, 
         message: 'Submission not found' 
       });
     }
     
-    writeData(data);
+    await portfolio.save();
     
     res.json({ 
       success: true, 
@@ -154,27 +106,27 @@ router.put('/',
   apiLimiter,
   contentUpdateValidation, 
   validate,
-  (req, res) => {
+  async (req, res) => {
     try {
       const { section, data } = req.body;
+      let portfolio = await Portfolio.findOne();
       
-      const currentDb = readData();
-      
-      if (!currentDb.content) {
-        currentDb.content = {};
+      if (!portfolio) {
+        portfolio = new Portfolio({ content: {}, adminSettings: { password: 'initial-setup' } });
       }
       
-      currentDb.content[section] = data;
-      currentDb.lastUpdated = new Date().toISOString();
-      currentDb.lastUpdatedBy = 'admin';
+      if (!portfolio.content) portfolio.content = {};
+      portfolio.content[section] = data;
+      portfolio.adminSettings.lastUpdated = new Date().toISOString();
+      portfolio.adminSettings.lastUpdatedBy = 'admin';
       
-      writeData(currentDb);
+      await portfolio.save();
       
       res.json({ 
         success: true, 
         message: `${section} updated successfully`,
         updatedSection: section,
-        timestamp: currentDb.lastUpdated
+        timestamp: portfolio.adminSettings.lastUpdated
       });
 
     } catch (error) {

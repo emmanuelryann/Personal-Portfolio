@@ -2,12 +2,7 @@ import { Router } from 'express';
 import { sendContactEmail } from '../config/email.js';
 import { contactLimiter } from '../middleware/rateLimiter.js';
 import { contactValidation, validate } from '../middleware/validation.js';
-import fs from 'fs';
-import path from 'path';
-
-import { STORAGE_CONFIG } from '../config/storage.js';
-
-const dataPath = STORAGE_CONFIG.dataPath;
+import Portfolio from '../models/Portfolio.js';
 
 const router = Router();
 
@@ -26,27 +21,26 @@ router.post('/',
         email, 
         subject, 
         message,
-        date: new Date().toISOString(),
+        date: new Date(),
         ip: req.ip || req.connection.remoteAddress,
         userAgent: req.get('user-agent')
       };
 
+      // Save to MongoDB
       try {
-        const db = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-        
-        if (!db.submissions) {
-          db.submissions = [];
+        const portfolio = await Portfolio.findOne();
+        if (portfolio) {
+          if (!portfolio.submissions) portfolio.submissions = [];
+          portfolio.submissions.unshift(submission);
+          
+          if (portfolio.submissions.length > 1000) {
+            portfolio.submissions = portfolio.submissions.slice(0, 1000);
+          }
+          
+          await portfolio.save();
         }
-        
-        db.submissions.unshift(submission);
-        
-        if (db.submissions.length > 1000) {
-          db.submissions = db.submissions.slice(0, 1000);
-        }
-        
-        fs.writeFileSync(dataPath, JSON.stringify(db, null, 2));
       } catch (dbError) {
-        console.error('Database error:', dbError);
+        console.error('Database error saving submission:', dbError);
       }
 
       try {

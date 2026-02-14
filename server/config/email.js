@@ -1,11 +1,18 @@
-import { Resend } from 'resend';
+let resendClient = null;
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const getResendClient = () => {
+  if (!resendClient) {
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error("Missing RESEND_API_KEY");
+    }
+    resendClient = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resendClient;
+};
 
 export const verifyTransporter = async () => {
   try {
-    if (!process.env.RESEND_API_KEY) throw new Error("Missing RESEND_API_KEY");
-    
+    getResendClient();
     console.log('✅ Resend Email Service is configured');
     return true;
   } catch (error) {
@@ -16,6 +23,7 @@ export const verifyTransporter = async () => {
 
 export const sendContactEmail = async ({ firstName, lastName, email, subject, message }) => {
   try {
+    const resend = getResendClient();
     const { data, error } = await resend.emails.send({
       from: process.env.FROM_EMAIL, 
       to: process.env.TO_EMAIL,
