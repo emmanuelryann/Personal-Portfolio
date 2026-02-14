@@ -34,6 +34,12 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 app.use(cookieParser());
 
+// Serve static files from uploads directory (Existing images in Git)
+app.use('/uploads', express.static(path.join(__dirname, 'server', 'uploads'), {
+  maxAge: '1d',
+  etag: true,
+}));
+
 // API Routes
 app.use('/api/contact', contactRouter);
 app.use('/api/content', contentRouter);

@@ -6,6 +6,34 @@ import { apiLimiter } from '../middleware/rateLimiter.js';
 
 const router = Router();
 
+// Helper to prepend BACKEND_URL to local image paths
+const prependBaseUrl = (obj) => {
+  if (!obj) return obj;
+  // Use BACKEND_URL for cross-domain resolution (Netlify -> Render)
+  const baseUrl = process.env.BACKEND_URL || '';
+  
+  if (typeof obj === 'string') {
+    if (obj.startsWith('/uploads/')) {
+      return `${baseUrl}${obj}`;
+    }
+    return obj;
+  }
+  
+  if (Array.isArray(obj)) {
+    return obj.map(item => prependBaseUrl(item));
+  }
+  
+  if (typeof obj === 'object') {
+    const newObj = {};
+    for (const key in obj) {
+      newObj[key] = prependBaseUrl(obj[key]);
+    }
+    return newObj;
+  }
+  
+  return obj;
+};
+
 router.get('/', apiLimiter, async (req, res) => {
   try {
     const data = await Portfolio.findOne();
@@ -25,9 +53,12 @@ router.get('/', apiLimiter, async (req, res) => {
       contactInfo: data.content?.contactInfo || {}
     };
     
+    // Resolve local paths for split deployment
+    const formattedContent = prependBaseUrl(publicContent);
+    
     res.json({ 
       success: true, 
-      content: publicContent 
+      content: formattedContent 
     });
   } catch (error) {
     console.error('Error reading content:', error);

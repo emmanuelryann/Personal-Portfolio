@@ -23,27 +23,30 @@ const seedDatabase = async () => {
 
     const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
 
-    // Check if portfolio already exists
-    const existing = await Portfolio.findOne();
-    if (existing) {
-      console.log('ℹ️ Database already contains data. Skipping initial seed.');
-      process.exit(0);
-    }
+    // Migrate password hash if it exists, otherwise use a placeholder
+    const passwordHash = data.admin?.passwordHash || '$2b$10$PlaceholderHashIfMissing';
 
-    // Adapt data structure to match schema if necessary
-    // Currently, our data.json matches 'content' and 'submissions'
-    const newPortfolio = new Portfolio({
+    // Adapt data structure to match schema exactly
+    const portfolioData = {
       content: data.content || {},
       submissions: data.submissions || [],
       adminSettings: {
-        password: '$2a$10$YourDefaultHashHere', // User will need to reset or we can copy from auth logic
-        lastUpdated: new Date().toISOString(),
-        lastUpdatedBy: 'system-seed'
+        password: passwordHash,
+        lastUpdated: data.lastUpdated || new Date().toISOString(),
+        lastUpdatedBy: data.lastUpdatedBy || 'system-seed'
       }
-    });
+    };
 
+    // Check if portfolio already exists
+    const existing = await Portfolio.findOne();
+    if (existing) {
+      console.log('ℹ️ Database already contains data. Overwriting with local data.json...');
+      await Portfolio.deleteOne({});
+    }
+
+    const newPortfolio = new Portfolio(portfolioData);
     await newPortfolio.save();
-    console.log('✅ Database successfully seeded from data.json!');
+    console.log('✅ Database successfully seeded and password hash migrated!');
     process.exit(0);
   } catch (error) {
     console.error('❌ Seeding failed:', error);
