@@ -5,8 +5,10 @@ import '../styles/ResumeManager.css';
 const ResumeManager = () => {
   const [experience, setExperience] = useState([]);
   const [education, setEducation] = useState([]);
+  const [cvUrl, setCvUrl] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState('');
 
   useEffect(() => {
@@ -18,6 +20,7 @@ const ResumeManager = () => {
         if (res.success) {
           setExperience(res.content.experience || []);
           setEducation(res.content.education || []);
+          setCvUrl(res.content.cvUrl || '');
         }
         setLoading(false);
       } catch (err) {
@@ -28,6 +31,44 @@ const ResumeManager = () => {
 
     fetchResumeData();
   }, []);
+
+  const handleCvUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      setMessage({ text: 'File too large (max 10MB)', type: 'error' });
+      return;
+    }
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('cv', file);
+
+    try {
+      const response = await fetch(API_ENDPOINTS.uploadCV, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+        },
+        body: formData
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setCvUrl(data.url);
+        setMessage({ text: 'CV uploaded! Remember to Save.', type: 'success' });
+      } else {
+        throw new Error(data.message || 'Upload failed');
+      }
+    } catch (error) {
+      console.error('CV Upload failed:', error);
+      setMessage({ text: error.message || 'CV Upload failed', type: 'error' });
+    } finally {
+      setUploading(false);
+      setTimeout(() => setMessage(''), 5000);
+    }
+  };
 
   const handleChange = (list, setList, index, field, value) => {
     const newList = [...list];
@@ -61,28 +102,25 @@ const ResumeManager = () => {
     
     try {
       // Save Experience
-      const expResponse = await authenticatedFetch(API_ENDPOINTS.content, {
+      await authenticatedFetch(API_ENDPOINTS.content, {
         method: 'PUT',
         headers: getAuthHeaders(),
         body: JSON.stringify({ section: 'experience', data: experience })
       });
-      const expData = await expResponse.json();
-
-      if (!expData.success) {
-        throw new Error(formatValidationErrors(expData));
-      }
       
       // Save Education
-      const eduResponse = await authenticatedFetch(API_ENDPOINTS.content, {
+      await authenticatedFetch(API_ENDPOINTS.content, {
         method: 'PUT',
         headers: getAuthHeaders(),
         body: JSON.stringify({ section: 'education', data: education })
       });
-      const eduData = await eduResponse.json();
 
-      if (!eduData.success) {
-        throw new Error(formatValidationErrors(eduData));
-      }
+      // Save CV URL
+      await authenticatedFetch(API_ENDPOINTS.content, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ section: 'cvUrl', data: cvUrl })
+      });
       
       setMessage({ text: 'Resume updated!', type: 'success' });
       setTimeout(() => setMessage(''), 5000);
@@ -159,15 +197,51 @@ const ResumeManager = () => {
 
   return (
     <div className="admin-form resume-manager">
+      <div className="resume-manager__section">
+        <h3 className="resume-manager__section-title">Resume File (PDF)</h3>
+        <div className="resume-manager__cv-upload">
+          {cvUrl ? (
+            <div className="resume-manager__cv-current">
+              <p>Current CV: <a href={cvUrl} target="_blank" rel="noopener noreferrer">View Current PDF</a></p>
+            </div>
+          ) : (
+            <p className="resume-manager__cv-none">No custom CV uploaded. Using default file.</p>
+          )}
+          
+          <div className="resume-manager__upload-controls">
+            <label className="resume-manager__file-label">
+              {uploading ? 'Uploading...' : 'Upload New CV'}
+              <input 
+                type="file" 
+                accept=".pdf" 
+                onChange={handleCvUpload} 
+                disabled={uploading}
+                style={{ display: 'none' }}
+              />
+            </label>
+            {cvUrl && (
+              <button 
+                onClick={() => setCvUrl('')} 
+                className="resume-manager__reset-btn"
+              >
+                Reset to Default
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <hr className="resume-manager__divider" />
+
       {renderList('Work Experience', experience, setExperience, 'Company')}
       {renderList('Education', education, setEducation, 'Institution', true)}
       
       <button 
         onClick={handleSave} 
-        disabled={saving} 
+        disabled={saving || uploading} 
         className="resume-manager__save-btn"
       >
-        {saving ? 'Saving...' : 'Save Resume'}
+        {saving ? 'Saving...' : 'Save All Resume Data'}
       </button>
       
       {message && (

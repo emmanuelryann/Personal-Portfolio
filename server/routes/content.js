@@ -50,7 +50,8 @@ router.get('/', apiLimiter, async (req, res) => {
       experience: data.content?.experience || [],
       education: data.content?.education || [],
       testimonials: data.content?.testimonials || [],
-      contactInfo: data.content?.contactInfo || {}
+      contactInfo: data.content?.contactInfo || {},
+      cvUrl: data.content?.cvUrl || ''
     };
     
     // Resolve local paths for split deployment

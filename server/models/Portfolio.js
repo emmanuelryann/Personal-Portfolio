@@ -9,7 +9,8 @@ const portfolioSchema = new mongoose.Schema({
     experience: [mongoose.Schema.Types.Mixed],
     education: [mongoose.Schema.Types.Mixed],
     testimonials: [mongoose.Schema.Types.Mixed],
-    contactInfo: mongoose.Schema.Types.Mixed
+    contactInfo: mongoose.Schema.Types.Mixed,
+    cvUrl: String
   },
   submissions: [mongoose.Schema.Types.Mixed],
   adminSettings: {

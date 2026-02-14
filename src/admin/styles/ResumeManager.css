@@ -91,3 +91,68 @@
 .resume-manager__message--error {
   color: #ff6b6b;
 }
+
+.resume-manager__cv-upload {
+  padding: 1rem;
+  background: #fdfdfd;
+  border: 1px dashed #ccc;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.resume-manager__cv-current {
+  margin-bottom: 1rem;
+}
+
+.resume-manager__cv-current a {
+  color: #96bb7c;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.resume-manager__cv-current a:hover {
+  text-decoration: underline;
+}
+
+.resume-manager__upload-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.resume-manager__file-label {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: #6c757d;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.resume-manager__file-label:hover {
+  background: #5a6268;
+}
+
+.resume-manager__reset-btn {
+  padding: 0.5rem 1rem;
+  background: none;
+  border: 1px solid #ff6b6b;
+  color: #ff6b6b;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.resume-manager__reset-btn:hover {
+  background: #ff6b6b;
+  color: white;
+}
+
+.resume-manager__divider {
+  margin: 2rem 0;
+  border: none;
+  border-top: 1px solid #eee;
+}
