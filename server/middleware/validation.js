@@ -75,7 +75,7 @@ export const contentUpdateValidation = [
   body('section')
     .notEmpty()
     .withMessage('Section is required')
-    .isIn(['bio', 'skills', 'portfolio', 'services', 'experience', 'education', 'testimonials', 'contactInfo'])
+    .isIn(['bio', 'skills', 'portfolio', 'services', 'experience', 'education', 'testimonials', 'contactInfo', 'cvUrl'])
     .withMessage('Invalid section'),
   body('data')
     .notEmpty()
