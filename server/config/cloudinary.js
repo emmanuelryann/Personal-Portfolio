@@ -22,7 +22,8 @@ export const storage = new CloudinaryStorage({
       folder: isPDF ? 'portfolio/docs' : 'portfolio/uploads',
       allowed_formats: isPDF ? ['pdf'] : ['jpg', 'png', 'gif', 'webp'],
       public_id: `${path.basename(file.originalname, path.extname(file.originalname))}-${Date.now()}`,
-      resource_type: isPDF ? 'image' : 'image',
+      resource_type: 'auto', // Let Cloudinary auto-detect the type for proper MIME handling
+      flags: isPDF ? 'attachment:false' : undefined, // Ensure PDFs open inline, not as download
     };
   },
 });
