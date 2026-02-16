@@ -20,7 +20,8 @@ export const storage = new CloudinaryStorage({
     const isPDF = file.mimetype === 'application/pdf';
     return {
       folder: isPDF ? 'portfolio/docs' : 'portfolio/uploads',
-      allowed_formats: isPDF ? undefined : ['jpg', 'png', 'gif', 'webp'],
+      allowed_formats: isPDF ? ['pdf'] : ['jpg', 'png', 'gif', 'webp'],
+      format: isPDF ? 'pdf' : undefined, // Force extension to .pdf
       public_id: path.basename(file.originalname, path.extname(file.originalname)),
       resource_type: isPDF ? 'raw' : 'image',
     };
