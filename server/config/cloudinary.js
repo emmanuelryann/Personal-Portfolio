@@ -18,15 +18,18 @@ export const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async (req, file) => {
     const isPDF = file.mimetype === 'application/pdf';
+    
+    // Keep original filename WITH extension
+    const nameWithoutExt = path.basename(file.originalname, path.extname(file.originalname));
+    
     return {
       folder: isPDF ? 'portfolio/docs' : 'portfolio/uploads',
       allowed_formats: isPDF ? ['pdf'] : ['jpg', 'png', 'gif', 'webp'],
-      format: isPDF ? 'pdf' : undefined, // Force extension to .pdf
-      // For raw files, we must include the extension in the public_id or it will be lost
-      public_id: isPDF 
-        ? `${path.basename(file.originalname, path.extname(file.originalname))}.pdf`
-        : path.basename(file.originalname, path.extname(file.originalname)),
+      public_id: nameWithoutExt,  // ← This is fine
       resource_type: isPDF ? 'raw' : 'image',
+      // ✅ ADD THIS to force .pdf in URL:
+      use_filename: true,
+      unique_filename: false,
     };
   },
 });

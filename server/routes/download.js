@@ -18,25 +18,13 @@ router.get('/download-cv', async (req, res) => {
       return res.redirect(data.content.cvUrl);
     }
 
-    const cvPath = path.join(__dirname, '..', 'uploads', 'Mgbeadichie Emmanuel - Resume.pdf');
-    
-    if (!fs.existsSync(cvPath)) {
-      console.error('CV file not found:', cvPath);
-      return res.status(404).json({ success: false, message: 'CV file not found' });
-    }
-
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'inline; filename="Mgbeadichie_Emmanuel_Resume.pdf"');
-    
-    res.sendFile(cvPath, (err) => {
-      if (err && !res.headersSent) {
-        console.error('Error sending CV:', err);
-        res.status(500).json({ success: false, message: 'Failed to view CV' });
-      }
+    return res.status(404).json({ 
+      success: false, 
+      message: 'CV not available' 
     });
   } catch (error) {
-    console.error('CV view error:', error);
-    res.status(500).json({ success: false, message: 'CV view failed' });
+    console.error('CV download error:', error);
+    res.status(500).json({ success: false, message: 'Failed to download CV' });
   }
 });
 

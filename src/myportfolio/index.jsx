@@ -379,7 +379,7 @@ function Portfolio() {
               <a href="#contact">
                 <button className="btn-primary">Hire Me</button>
               </a>
-              <a href={content.cvUrl || API_ENDPOINTS.downloadCV} target="_blank" rel="noopener noreferrer">
+              <a href={API_ENDPOINTS.downloadCV} target="_blank" rel="noopener noreferrer">
                 <button className="btn-primary btn-cv">Download CV</button>
               </a>
             </div>
