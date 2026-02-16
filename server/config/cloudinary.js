@@ -22,7 +22,10 @@ export const storage = new CloudinaryStorage({
       folder: isPDF ? 'portfolio/docs' : 'portfolio/uploads',
       allowed_formats: isPDF ? ['pdf'] : ['jpg', 'png', 'gif', 'webp'],
       format: isPDF ? 'pdf' : undefined, // Force extension to .pdf
-      public_id: path.basename(file.originalname, path.extname(file.originalname)),
+      // For raw files, we must include the extension in the public_id or it will be lost
+      public_id: isPDF 
+        ? `${path.basename(file.originalname, path.extname(file.originalname))}.pdf`
+        : path.basename(file.originalname, path.extname(file.originalname)),
       resource_type: isPDF ? 'raw' : 'image',
     };
   },
