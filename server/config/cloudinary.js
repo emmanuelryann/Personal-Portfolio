@@ -19,15 +19,13 @@ export const storage = new CloudinaryStorage({
   params: async (req, file) => {
     const isPDF = file.mimetype === 'application/pdf';
     
-    // Keep original filename WITH extension
     const nameWithoutExt = path.basename(file.originalname, path.extname(file.originalname));
     
     return {
       folder: isPDF ? 'portfolio/docs' : 'portfolio/uploads',
       allowed_formats: isPDF ? ['pdf'] : ['jpg', 'png', 'gif', 'webp'],
-      public_id: nameWithoutExt,  // ← This is fine
+      public_id: nameWithoutExt,
       resource_type: isPDF ? 'raw' : 'image',
-      // ✅ ADD THIS to force .pdf in URL:
       use_filename: true,
       unique_filename: false,
     };
